@@ -63,10 +63,10 @@ const FavoriteRecipes: React.FC = () => {
         <Header />
         <Text style={tw`text-black text-xl p-2 items-center `}>Kho Món Ngon Của Bạn</Text>
       </View>
-        {/* <SearchController /> */}
+        
      
       <View style={tw`flex-row `}>
-        <TouchableOpacity style={tw`flex-row items-center h-8 w-auto border rounded-xl px-3 mt-2 mb-5 bg-white-100 text-sm p-1`}>
+        <TouchableOpacity style={tw`flex-row items-center h-8 w-auto border rounded-xl px-3 mt-2 mb-5 bg-white-100 text-sm p-1 ml-4`}>
           <Icon name="bookmark" size={20} color="black" style={tw`mr-2`} />
           <Text style={tw`text-sm`}>Đã lưu</Text>
         </TouchableOpacity>

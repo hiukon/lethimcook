@@ -50,18 +50,46 @@ const Details: React.FC = () => {
 
   const handleFavorite = async () => {
     try {
-      let favoriteRecipes: { id: string; name: string; ingredients: string[]; author: string; image: string; steps: string[] }[] | null = JSON.parse(await AsyncStorage.getItem('favoriteRecipes') || '[]');
-      favoriteRecipes = favoriteRecipes || [];
-
-      const isExist = Array.isArray(favoriteRecipes) && favoriteRecipes.some(item => item.id === recipe.id.toString());
-
+      // Kiểm tra trạng thái mạng
+      const netState = await NetInfo.fetch();
+  
+      // Lấy dữ liệu yêu thích từ AsyncStorage
+      let favoriteRecipes = JSON.parse(await AsyncStorage.getItem('favoriteRecipes') || '[]') || [];
+  
+      const isExist = favoriteRecipes.some((item: { id: string; }) => item.id === recipe.id.toString());
+  
       if (!isExist) {
-        (Array.isArray(favoriteRecipes) ? favoriteRecipes : (favoriteRecipes = [])).push({ ...recipe, id: recipe.id.toString() });
+        favoriteRecipes.push({ ...recipe, id: recipe.id.toString() });
         await AsyncStorage.setItem('favoriteRecipes', JSON.stringify(favoriteRecipes));
         Alert.alert('Thành công', 'Đã thêm vào món yêu thích!');
+  
+       // Nếu có mạng, lưu lên MongoDB
+if (netState.isConnected) {
+  try {
+    // Sửa lại URL cho đúng route "/api/favorites/addFavorite"
+    await axios.post(`${API_BASE_URL}/favorites/addFavorite`, {
+      name: recipe.name,
+      ingredients: recipe.ingredients,
+      steps: recipe.steps,
+      author: recipe.author,
+      image: recipe.image,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    Alert.alert('Thành công', 'Dữ liệu đã được lưu lên MongoDB!');
+  } catch (error) {
+    console.error('Lỗi khi lưu lên MongoDB:', error);
+    Alert.alert('Lỗi', 'Đã xảy ra lỗi khi lưu dữ liệu lên MongoDB.');
+  }
+} else {
+  Alert.alert('Không có kết nối mạng', 'Món ăn đã lưu offline. Hãy kết nối mạng để đồng bộ.');
+}
 
         // Điều hướng đến trang FavoriteRecipes
-        navigation.navigate('FavoriteRecipes' as never);
+        // navigation.navigate('FavoriteRecipes' as never);
       } else {
         Alert.alert('Thông báo', 'Món ăn này đã có trong danh sách yêu thích!');
       }
@@ -70,6 +98,7 @@ const Details: React.FC = () => {
       Alert.alert('Lỗi', 'Đã xảy ra lỗi khi lưu món ăn.');
     }
   };
+  
 
   if (loading) return <ActivityIndicator size="large" color="blue" />;
   
@@ -77,7 +106,7 @@ const Details: React.FC = () => {
   return (
     <>
       {/* Header */}
-      <View style={tw`flex flex-row justify-between items-center bg-white  py-2`}>
+      <View style={tw` flex-row justify-between items-center bg-white  py-2`}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={tw`text-2xl`}>← </Text>
         </TouchableOpacity>

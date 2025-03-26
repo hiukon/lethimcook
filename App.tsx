@@ -11,6 +11,7 @@ import SearchView from './Views/SearchView';
 import { RootStackParamList } from './types'; 
 import HomeScreen from './Views/HomeScreen';
 import TabHome from './navigation/DH'; 
+import FavoriteRecipes from './Views/FavoriteRecipes';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
       <Stack.Screen name="Details" component={Details}  />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
+      {/* <Stack.Screen name="FavoriteRecipes" component={FavoriteRecipes} /> */}
     </Stack.Navigator>
   );
 };

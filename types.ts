@@ -19,5 +19,6 @@ export type RootStackParamList = {
     HomeScreen: undefined;
     Home: undefined;
     HomeLogin: undefined;
+    FavoriteRecipes : undefined;
     SearchView: { searchResults: SearchResult[] }; // Add SearchView with expected params
 };
