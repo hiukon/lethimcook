@@ -49,12 +49,13 @@ const RecipeList = () => {
     if (loading) return <ActivityIndicator size="large" color="blue" />;
 
     return (
+        
         <View style={tw`flex p-1`}>
-            <View style={tw` flex-row items-center border rounded-2xl px-2 bg-orange-50 mb-2`}>
+            <View style={tw` flex-row items-center border rounded-2xl px-2 bg-orange-50 mb-1`}>
                 <TextInput
                     placeholder="Nhập món ăn cần tìm..."
                     placeholderTextColor="gray"
-                    style={tw`flex-1 h-8 text-xs leading-none py-0 px-2`}
+                    style={tw`flex-1 h-8 text-xs leading-none px-2`}
                     value={searchQuery}
                     onChangeText={(text) => setSearchQuery(text)}
                     underlineColorAndroid="transparent"
@@ -64,6 +65,7 @@ const RecipeList = () => {
                 </TouchableOpacity>
             </View>
         </View>
+        
     );
 };
 

@@ -23,7 +23,8 @@ const App = () => {
       <Stack.Screen name="RecipeList" component={RecipeList}  />
       <Stack.Screen name="SearchView" component={SearchView} />
       <Stack.Screen name="Details" component={Details}  />
-      <Stack.Screen name="Login" component={LoginScreen} />    
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />   
     </Stack.Navigator>
   );
 };

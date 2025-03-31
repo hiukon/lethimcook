@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, FlatList, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Image, FlatList, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert, Animated, ImageBackground } from 'react-native';
+const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import tw from 'twrnc';
 import Header from './header';
@@ -20,11 +21,38 @@ const API_BASE_URL = 'http://192.168.31.188:3000/api';
 type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'Details'>;
 
 const Details: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState<number | null>(null);
   const route = useRoute<DetailsScreenRouteProp>();
   const { recipe } = route.params;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const animatedValue = useRef(new Animated.Value(0)).current; 
+  const startCooking = () => setCurrentStep(0);
+  // Điều hướng giữa các bước
+  const nextStep = () => setCurrentStep((prev) => (prev !== null && prev < recipe.steps.length - 1 ? prev + 1 : prev));
+  const prevStep = () => setCurrentStep((prev) => (prev !== null && prev > 0 ? prev - 1 : prev));
 
   const [loading, setLoading] = useState(false);
+  const INITIAL_HEIGHT = 300; // Kích thước ảnh ban đầu (có thể thay đổi)
+  const HEADER_HEIGHT = 64; // Kích thước header khi thu nhỏ
+
+  // Chiều cao ảnh thu nhỏ dần từ INITIAL_HEIGHT về HEADER_HEIGHT
+  const imageHeight = animatedValue.interpolate({
+    inputRange: [0, 200], 
+    outputRange: [INITIAL_HEIGHT, HEADER_HEIGHT], 
+    extrapolate: "clamp",
+  });
+
+  // Dịch chuyển ảnh lên để giữ phần trung tâm
+  const translateY = animatedValue.interpolate({
+    inputRange: [0, 200],
+    outputRange: [0, (HEADER_HEIGHT - INITIAL_HEIGHT) / 2], // Đẩy ảnh lên để giữ giữa
+    extrapolate: "clamp",
+  });
+  const titleOpacity = animatedValue.interpolate({
+    inputRange: [100, 200], // Bắt đầu hiện dần từ 100px cuộn
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
   const [similarRecipes, setSimilarRecipes] = useState<{
     _id: string; id: number; name: string; ingredients: string[]; author: string; image: string; steps: string[] 
 }[]>([]);
@@ -89,8 +117,6 @@ if (netState.isConnected) {
   Alert.alert('Không có kết nối mạng', 'Món ăn đã lưu offline. Hãy kết nối mạng để đồng bộ.');
 }
 
-        // Điều hướng đến trang FavoriteRecipes
-        // navigation.navigate('FavoriteRecipes' as never);
       } else {
         Alert.alert('Thông báo', 'Món ăn này đã có trong danh sách yêu thích!');
       }
@@ -106,27 +132,38 @@ if (netState.isConnected) {
 
   return (
     <>
-      {/* Header */}
-      <View style={tw` flex flex-row justify-between items-center bg-white  py-2`}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={tw`text-2xl ml-2`}>← </Text>
-        </TouchableOpacity>
+      <AnimatedImageBackground
+      
+        source={{ uri: recipe.image }} 
+        style={[tw`w-full`, { height: imageHeight }]}
+      >
         
-        <View style={tw`flex-1`} >
-        <SearchController />
-        </View>
-        <View style={tw`flex-row items-center gap-4`}>
-        <TouchableOpacity style={tw`flex-row items-center h-8 w-auto  px-3 mt-2 mb-5 bg-white-100 text-sm p-1 ml-4`}>
-          <Icon name="filter" size={25} color="" style={tw`mr-2`} />
-          
-        </TouchableOpacity>
-        </View>
-      </View>
+        <Animated.View style={tw`absolute top-0 left-0 right-0 flex-row justify-between items-center px-4 py-3`}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={tw`text-2xl text-white`}>←</Text>
+          </TouchableOpacity>
+          <Animated.Text style={[tw`text-lg font-bold text-white`, { opacity: titleOpacity }]}>
+          {recipe.name}
+          </Animated.Text>
+          <View style={tw`flex-row items-center gap-4`}>
+            <TouchableOpacity style={tw`flex-row items-center h-8 px-3  p-1 rounded-lg`}>
+              <Icon name="filter" size={20} color="white"  />
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </AnimatedImageBackground>
 
-      <ScrollView style={tw`bg-white`}>
-        {/* Hình ảnh và thông tin cơ bản */}
-        <Image source={{ uri: recipe.image }} style={tw`w-full h-64 my-2 rounded-lg`} />
-        <Text style={tw`text-2xl font-bold px-3 mt-2`}>Tên món ăn: {recipe.name}</Text>
+      {/* Nội dung cuộn */}
+      <ScrollView
+        style={tw`bg-white`}
+        contentContainerStyle={tw`pt-4`} 
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: animatedValue } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
+      >
+        <Text style={tw`text-2xl font-bold px-3 `}>Tên món ăn: {recipe.name}</Text>
         <Text style={tw`text-lg px-3 mb-2 `}>Tác giả: {recipe.author}</Text>
       
         <Text style={tw`h-8 w-auto border rounded-lg px-3 mt-2 mb-5 bg-gray-100 text-sm text-center p-1`}>🕒 15 phút</Text>
@@ -142,20 +179,74 @@ if (netState.isConnected) {
         />
 
         {/* Cách làm */}
-        <Text style={tw`text-xl font-bold px-3 mt-3`}>🍳 Các bước nấu món </Text>
-        <FlatList
-          data={recipe.steps}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => (
-            <View style={tw`flex-row items-center m-2`}>
-              <View style={tw`w-8 h-8 bg-orange-300 rounded-full justify-center items-center mt-0 `}>
-                <Text style={tw`text-lg font-bold `}>{index + 1}</Text>
+        <View style={tw`flex-1 bg-white p-4`}>
+          {/* Ảnh món ăn */}
+
+
+          {/* Nếu đang ở chế độ từng bước */}
+          {currentStep !== null ? (
+            <View style={tw`items-center`}>
+              <Image
+                source={{ uri: `https://source.unsplash.com/random?food${currentStep}` }}
+                style={tw`w-full h-64 rounded-lg mb-4`}
+              />
+              <Text style={tw`text-2xl font-bold`}>Bước {currentStep + 1}</Text>
+              <Text style={tw`text-lg text-gray-600 text-center mt-2`}>{recipe.steps[currentStep]}</Text>
+
+              {/* Nút điều hướng */}
+              <View style={tw`flex-row mt-6`}>
+                <TouchableOpacity
+                  onPress={prevStep}
+                  disabled={currentStep === 0}
+                  style={tw`px-4 py-2 bg-gray-300 rounded-lg mx-2 ${currentStep === 0 ? "opacity-50" : ""}`}
+                >
+                  <Text style={tw`text-lg`}>Quay lại</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={nextStep}
+                  disabled={currentStep === recipe.steps.length - 1}
+                  style={tw`px-4 py-2 bg-orange-500 rounded-lg mx-2 ${currentStep === recipe.steps.length - 1 ? "opacity-50" : ""}`}
+                >
+                  <Text style={tw`text-lg text-white`}>Tiếp theo</Text>
+                </TouchableOpacity>
               </View>
-              <Text style={tw`px-3 text-2xl`}>{item}</Text>
+
+              {/* Nút thoát khỏi chế độ từng bước */}
+              <TouchableOpacity
+            onPress={() => setCurrentStep(null)}
+            style={tw`mt-6 px-4 py-2 bg-red-500 rounded-lg`}
+          >
+            <Text style={tw`text-lg text-white`}>Thoát</Text>
+          </TouchableOpacity>
             </View>
+          ) : (
+            // Hiển thị danh sách tất cả bước
+            <>
+              <Text style={tw`text-xl font-bold px-3 mt-3`}>🍳 Các bước nấu món</Text>
+              <FlatList
+                data={recipe.steps}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => (
+                  <View style={tw`flex-row items-center m-2`}>
+                    <View style={tw`w-8 h-8 bg-orange-300 rounded-full justify-center items-center`}>
+                      <Text style={tw`text-lg font-bold`}>{index + 1}</Text>
+                    </View>
+                    <Text style={tw`px-3 text-2xl`}>{item}</Text>
+                  </View>
+                )}
+              />
+
+              {/* Nút Bắt đầu nấu */}
+              <TouchableOpacity
+                style={tw`bg-orange-500 p-3 rounded-lg mt-4`}
+                onPress={startCooking}
+              >
+                <Text style={tw`text-white text-lg text-center`}>Bắt đầu nấu</Text>
+              </TouchableOpacity>
+            </>
           )}
-          nestedScrollEnabled={true}
-        />
+        </View>
 
         <View>
           <Text style={tw`text-black text-l mr-2 px-2 mt-2 `}>Bày tỏ cảm xúc của bạn</Text>
@@ -225,3 +316,5 @@ if (netState.isConnected) {
 };
 
 export default Details;
+
+
