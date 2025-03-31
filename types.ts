@@ -12,7 +12,11 @@ export interface SearchResult {
 export type RootStackParamList = {
     RecipeList: undefined;
     Details: { recipe: SearchResult };
-    BottomTabNavigator: undefined;  
+    BottomTabNavigator: {
+        screen: string;
+        params: { screen: string, params: object  };
+        
+      }; 
     Drawer: undefined;  
     SignUp: undefined;
     Login: undefined;

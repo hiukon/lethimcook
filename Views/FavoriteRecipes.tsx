@@ -8,6 +8,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import SearchController from '@/controllers/SearchRecipe';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
+
 const FavoriteRecipes: React.FC = () => {
   const [favoriteRecipes, setFavoriteRecipes] = useState<any[]>([]);
   const isFocused = useIsFocused();
@@ -88,14 +90,14 @@ const FavoriteRecipes: React.FC = () => {
             <>
               <TouchableOpacity 
                 onPress={() => navigation.navigate('Details', { recipe: item })}
-                style={tw`bg-orange-100 p-3 mb-3 rounded-lg flex-row items-center`}>
+                style={tw`bg-orange-100 p-3 mb-3 border rounded-lg flex-row items-center`}>
                 <Image source={{ uri: item.image }} style={tw`w-16 h-16 rounded-lg mr-3`} />
                 <View style={tw`flex-1`}>
                   <Text style={tw`text-black text-lg`}>{item.name}</Text>
                   <Text style={tw`text-gray-400`}>Tác giả: {item.author}</Text>
                 </View>
                 <TouchableOpacity onPress={() => toggleFavorite(item)}>
-                  <Text style={tw`${isFavorite ? 'text-yellow-500' : 'text-gray-400'} text-2xl`}>★</Text>
+                  <Text style={tw`${isFavorite ? 'text-yellow-500' : 'text-gray-400'} text-3xl`}>★</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
               </>

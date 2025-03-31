@@ -9,9 +9,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-
-const API_BASE_URL = 'http:/192.168.1.165:3000/api';
+const API_BASE_URL = 'http://192.168.31.188:3000/api';
+// const API_BASE_URL = 'http://172.20.10.2:3000/api';
 
 // Định nghĩa kiểu dữ liệu cho route
 
@@ -106,15 +107,19 @@ if (netState.isConnected) {
   return (
     <>
       {/* Header */}
-      <View style={tw` flex-row justify-between items-center bg-white  py-2`}>
+      <View style={tw` flex flex-row justify-between items-center bg-white  py-2`}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={tw`text-2xl`}>← </Text>
+          <Text style={tw`text-2xl ml-2`}>← </Text>
         </TouchableOpacity>
-        <Header />
+        
+        <View style={tw`flex-1`} >
         <SearchController />
+        </View>
         <View style={tw`flex-row items-center gap-4`}>
-          <TouchableOpacity><Text style={tw`text-lg`}>📌</Text></TouchableOpacity>
-          <TouchableOpacity><Text style={tw`text-lg`}>•••</Text></TouchableOpacity>
+        <TouchableOpacity style={tw`flex-row items-center h-8 w-auto  px-3 mt-2 mb-5 bg-white-100 text-sm p-1 ml-4`}>
+          <Icon name="filter" size={25} color="" style={tw`mr-2`} />
+          
+        </TouchableOpacity>
         </View>
       </View>
 
@@ -190,7 +195,6 @@ if (netState.isConnected) {
            </View>
          </View>
        </View>
-
         {/* Các món có nguyên liệu tương tự */}
         <Text style={tw`text-xl font-bold px-3 mt-5 mb-2`}>Các món có nguyên liệu tương tự</Text>
         {similarRecipes.length === 0 ? (
@@ -201,8 +205,7 @@ if (netState.isConnected) {
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity 
-                onPress={() => navigation.navigate('Details', { recipe: { ...item, id: Number(item.id) } })}
-              > 
+                onPress={() => navigation.navigate('Details', { recipe: { ...item, id: Number(item.id) } })}> 
              <View style={tw`flex-row flex-wrap`}>
               <Image source={{ uri: item.image }} style={tw`w-40 h-30 my-2 rounded-lg px-1 bg-`} />
               <View style={tw`flex-1`}>
@@ -210,7 +213,6 @@ if (netState.isConnected) {
                 <Text style={tw`px-2 text-xxl flex-wrap break-words`}>Nguyên liệu: {item.ingredients.join(', ')}</Text>
               </View>
             </View>
-
               </TouchableOpacity>
             )}
             nestedScrollEnabled={true}

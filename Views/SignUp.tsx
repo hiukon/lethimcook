@@ -5,7 +5,8 @@ import axios from 'axios';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 
 
-const API_BASE_URL = 'http:/192.168.1.165:3000/api/user';
+const API_BASE_URL = 'http://192.168.31.188:3000/api/user';
+// const API_BASE_URL = 'http://172.20.10.2:3000/api/user';
 
 type RootStackParamList = {
   Login: undefined;
@@ -44,21 +45,21 @@ const SignUpScreen = () => {
     }
   };
   return (
-    <ImageBackground style={tw` flex-1 justify-center items-center  px-5`}
+    <ImageBackground style={tw` flex-1 justify-center items-center px-5`}
             source={require('../Img/ca.jpg')}
             resizeMode="cover" > 
       <Image source={require('../Img/pen.png')} style={tw`w-40 h-40 mb-5`} />
       <View style={tw`w-full border-2 border-gray-300 bg-black/30 rounded-lg p-3 mb-4 text-black`}>
           <Text style={tw`text-2xl font-bold text-orange-200 text-center mb-8`}>Đăng ký tài khoản</Text>
           <TextInput
-            style={tw`w-full border-2 border-orange-300 rounded-lg p-3 text-base mb-4`}
+            style={tw`w-full border-2 border-orange-300 rounded-lg p-3 text-base mb-4 text-white`}
             placeholder="Tên của bạn"
             value={name}
             onChangeText={setName}
             placeholderTextColor="white"
           />
           <TextInput
-            style={tw`w-full border-2 border-orange-300 rounded-lg p-3 text-base mb-4`}
+            style={tw`w-full border-2 border-orange-300 rounded-lg p-3 text-base mb-4 text-white`}
             placeholder="Email"
             value={email}
             onChangeText={setEmail}
@@ -66,7 +67,7 @@ const SignUpScreen = () => {
             placeholderTextColor="white"
           />
           <TextInput
-            style={tw`w-full border-2 border-orange-300 rounded-lg p-3 text-base mb-4`}
+            style={tw`w-full border-2 border-orange-300 rounded-lg p-3 text-base mb-4 text-white`}
             placeholder="Mật khẩu"
             value={password}
             onChangeText={setPassword}

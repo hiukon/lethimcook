@@ -8,7 +8,8 @@ import { RootStackParamList } from '@/types';
 import { getUserData } from '../models/authHelper';
 import Login from './Login';
 
-const API_BASE_URL = 'http://192.168.1.165:3000/api';
+const API_BASE_URL = 'http://192.168.31.188:3000/api';
+// const API_BASE_URL = 'http://172.20.10.2:3000/api';
 
 type SearchViewRouteProp = RouteProp<RootStackParamList, 'RecipeList'>;
 
@@ -33,7 +34,6 @@ const RecipeList: React.FC = () => {
   const handlePressRecipe = (recipe: Recipe) => {
     navigation.navigate('Details', { recipe: { ...recipe, id: Number(recipe.id) } });
   };
-
   const fetchRandomRecipes = async () => {
     setLoading(true);
     try {
@@ -49,7 +49,6 @@ const RecipeList: React.FC = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     const checkAuth = async () => {
       const { token } = await getUserData();

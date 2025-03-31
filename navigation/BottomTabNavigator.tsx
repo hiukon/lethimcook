@@ -6,7 +6,11 @@ import login from '../Views/Login';
 import sign from '../Views/SignUp';
 import view from '../Views/SearchView';
 import TabHome from './DH';
-
+    type RootStackParamList = {
+      SignUp: undefined;
+      HomeScreen: undefined; 
+      BottomTabNavigator: { screen: string, params: { screen: string; } }; 
+    };
 
 const Tab = createBottomTabNavigator();
 
@@ -34,7 +38,6 @@ const BottomTabNavigator = () => {
       <Tab.Screen name="Tìm kiếm" component={TabHome} />
       <Tab.Screen name="Kho món ngon" component={Favorites} />
       <Tab.Screen name="login" component={login} />
-      <Tab.Screen name="sign" component={sign} />
       
     </Tab.Navigator>
   );

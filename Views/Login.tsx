@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { Text, View, Image, TextInput, TouchableOpacity, Alert, ActivityIndicator, ImageBackground} from 'react-native';
+import { Text, View, Image, TextInput, TouchableOpacity, Alert, ActivityIndicator, ImageBackground, StatusBar} from 'react-native';
 import tw from 'twrnc';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setUserToken, getUserData, removeUserToken } from '../models/authHelper';
 
+
 type RootStackParamList = {
   SignUp: undefined;
-  HomeScreen: undefined; // Điều hướng đến màn hình chính sau khi đăng nhập
+  HomeScreen: undefined; 
+  BottomTabNavigator: { screen: string, params: { screen: string; } }; // Điều hướng đến BottomTabNavigator
 };
 
-const API_BASE_URL = 'http://192.168.1.165:3000/api/user';// Cập nhật URL phù hợp với backend của bạn
+const API_BASE_URL = 'http://192.168.31.188:3000/api/user';
+// const API_BASE_URL = 'http://172.20.10.2:3000/api/user';
 
 const Login = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -38,8 +41,10 @@ const Login = () => {
         username: user?.username, 
         userId: user?.userId 
       }));
-      // Chuyển đến màn hình chính
-      navigation.navigate('HomeScreen');
+      navigation.navigate('BottomTabNavigator', {
+        screen: 'TabHome',
+        params: { screen: 'Home' }
+      });
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         Alert.alert('Lỗi', error.response?.data?.message || 'Đăng nhập thất bại!');
@@ -53,19 +58,17 @@ const Login = () => {
   };
 
   return (
-  <> 
-      <ImageBackground style={tw` flex-1 justify-center items-center  px-5`}
-        source={require('../Img/vit.jpg')}
+   <> 
+    <StatusBar backgroundColor={"black"} ></StatusBar>
+      <ImageBackground style={tw` flex-1 justify-center items-center px-5 `}
+        source={require('../Img/vit1.jpg')}
         resizeMode="cover" >
-        {/* Logo */}
         <Image source={require('../Img/pen.png')} style={tw`w-40 h-40 mb-9`} />
-
-        <View style={tw`w-full border-2 border-gray-300 bg-black/30 rounded-lg p-3 mb-4 text-black`}>
-          <Text style={tw`text-2xl font-bold text-orange-200 mb-8 text-center`}>Xin chào  !</Text>
-
+        <View style={tw`w-full border-2 border-gray-300 bg-black/30 rounded-lg p-3 mb-4 `}>
+          <Text style={tw`text-2xl font-bold text-orange-200 mb-8 text-center`}>Xin chào !</Text>
           {/* Input Email */}
           <TextInput
-            style={tw`w-full border-2 border-orange-300 bg-orange-40 rounded-lg p-3 text-base mb-4 text-black`}
+            style={tw`w-full border-2 border-orange-300 leading-none  rounded-lg p-3 text-base mb-4 text-white`}
             placeholder="Nhập email"
             placeholderTextColor="white"
             keyboardType="email-address"
@@ -74,7 +77,7 @@ const Login = () => {
           />
 
           <TextInput
-            style={tw`w-full border-2 border-orange-300 bg-white-40 rounded-lg p-3 text-base mb-4 text-black`}
+            style={tw`w-full border-2 border-orange-300  leading-none  rounded-lg p-3 text-base mb-4 text-white`}
             placeholder="Nhập mật khẩu"
             placeholderTextColor="white"
             secureTextEntry
@@ -104,6 +107,7 @@ const Login = () => {
           </Text>
         </View>
       </ImageBackground>
+      
     
   </> 
   );

@@ -7,7 +7,8 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 
-const API_BASE_URL = 'http://192.168.1.165:3000/api';
+const API_BASE_URL = 'http://192.168.31.188:3000/api';//ct
+// const API_BASE_URL = 'http://172.20.10.2:3000/api';//ip
 
 const RecipeList = () => {
     const [recipes, setRecipes] = useState([]);
@@ -35,7 +36,11 @@ const RecipeList = () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/search?q=${searchQuery}`);
             setSearchResults(response.data); // Store search results
-            navigation.navigate('SearchView', { searchResults: response.data }); // Navigate to SearchView with search results
+            //  navigation.navigate('SearchView', { searchResults: response.data }); 
+            navigation.navigate('BottomTabNavigator', {
+                screen: 'Tìm kiếm',    
+                params: {screen: 'Search', params: { searchResults: response.data }}
+              });
         } catch (error) {
             console.error("Lỗi khi tìm kiếm công thức:", error);
         }
@@ -44,8 +49,8 @@ const RecipeList = () => {
     if (loading) return <ActivityIndicator size="large" color="blue" />;
 
     return (
-        <View style={tw`flex-1 p-1`}>
-            <View style={tw`flex-row items-center border rounded-xl px-2 bg-gray-50`}>
+        <View style={tw`flex p-1`}>
+            <View style={tw` flex-row items-center border rounded-2xl px-2 bg-orange-50 mb-2`}>
                 <TextInput
                     placeholder="Nhập món ăn cần tìm..."
                     placeholderTextColor="gray"

@@ -7,7 +7,9 @@ import { RootStackParamList, SearchResult } from '@/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import tw from 'twrnc';
 
+
 type SearchViewRouteProp = RouteProp<RootStackParamList, 'SearchView'>;
+
 const SearchView: React.FC = () => {
   const route = useRoute<SearchViewRouteProp>();
   const { searchResults } = route.params;
@@ -16,12 +18,10 @@ const SearchView: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const showDetail = (recipe: SearchResult) => {
-    Alert.alert(
-      recipe.name,
-      `Mô tả: ${recipe.ingredients.join(', ')}\nTác giả: ${recipe.author}`,
-      [{ text: 'Đóng' }]
-    );
-    navigation.navigate('Details', { recipe });
+    navigation.navigate('BottomTabNavigator', {
+      screen: 'Tìm kiếm',    
+      params: {screen: 'Details', params: { recipe }}
+    });  
   };
 
   return (
@@ -31,7 +31,9 @@ const SearchView: React.FC = () => {
           <Text style={tw`text-lg`} onPress={() => navigation.goBack()}>←</Text>
         </TouchableOpacity>
         <Header />
+        <View style={tw`flex-1`} >
         <SearchController />
+        </View>
       </View>
       <ScrollView style={tw`bg-orange-50`}>
         <Text style={tw`text-black text-2xl p-2`}>Món mới nhất</Text>
