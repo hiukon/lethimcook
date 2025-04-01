@@ -2,7 +2,6 @@ const Recipe = require('../models/Recipe');
 
 // Lấy tất cả công thức
 exports.getRecipes = async (req, res) => {
-    console.log("kkks");
     try {
         const recipes = await Recipe.find();
         return res.json(recipes);

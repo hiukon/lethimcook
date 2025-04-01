@@ -6,9 +6,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
+import { API_BASE_URL } from '../config';
 
-const API_BASE_URL = 'http://192.168.31.188:3000/api';//ct
-// const API_BASE_URL = 'http://172.20.10.2:3000/api';//ip
 
 const RecipeList = () => {
     const [recipes, setRecipes] = useState([]);
@@ -36,7 +35,6 @@ const RecipeList = () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/search?q=${searchQuery}`);
             setSearchResults(response.data); // Store search results
-            //  navigation.navigate('SearchView', { searchResults: response.data }); 
             navigation.navigate('BottomTabNavigator', {
                 screen: 'Tìm kiếm',    
                 params: {screen: 'Search', params: { searchResults: response.data }}
