@@ -4,8 +4,7 @@ import { Text, View, Image, TextInput, TouchableOpacity, Alert, ActivityIndicato
 import tw from 'twrnc';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setUserToken, getUserData, removeUserToken } from '../models/authHelper';
-
+import { API_BASE_URL } from '../config';
 
 type RootStackParamList = {
   SignUp: undefined;
@@ -13,8 +12,6 @@ type RootStackParamList = {
   BottomTabNavigator: { screen: string, params: { screen: string; } }; // Điều hướng đến BottomTabNavigator
 };
 
-const API_BASE_URL = 'http://192.168.31.188:3000/api/user';
-// const API_BASE_URL = 'http://172.20.10.2:3000/api/user';
 
 const Login = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();

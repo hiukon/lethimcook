@@ -6,10 +6,7 @@ import axios from 'axios';
 import tw from 'twrnc';
 import { RootStackParamList } from '@/types';
 import { getUserData } from '../models/authHelper';
-
-
-const API_BASE_URL = 'http://192.168.31.188:3000/api';
-// const API_BASE_URL = 'http://172.20.10.2:3000/api';
+import { API_BASE_URL } from '../config';
 
 type SearchViewRouteProp = RouteProp<RootStackParamList, 'RecipeList'>;
 

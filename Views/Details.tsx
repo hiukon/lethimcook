@@ -1,23 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Image, FlatList, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert, Animated, ImageBackground } from 'react-native';
-const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
+
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import tw from 'twrnc';
 import Header from './header';
-import SearchController from '@/controllers/SearchRecipe';
 import axios from 'axios';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import NetInfo from '@react-native-community/netinfo';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { API_BASE_URL } from '../config';
 
-const API_BASE_URL = 'http://192.168.31.188:3000/api';
-// const API_BASE_URL = 'http://172.20.10.2:3000/api';
 
-// Định nghĩa kiểu dữ liệu cho route
-
-// Define the type for route parameters
+const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'Details'>;
 
 const Details: React.FC = () => {
@@ -78,8 +73,8 @@ const Details: React.FC = () => {
 
   const handleFavorite = async () => {
     try {
-      // Kiểm tra trạng thái mạng
-      const netState = await NetInfo.fetch();
+  
+
   
       // Lấy dữ liệu yêu thích từ AsyncStorage
       let favoriteRecipes = JSON.parse(await AsyncStorage.getItem('favoriteRecipes') || '[]') || [];
