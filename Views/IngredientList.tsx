@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, Image, FlatList, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, Image, FlatList, Dimensions, TouchableOpacity,ActivityIndicator } from 'react-native';
 import { ingredients } from '../models/ingredientsData';
 import tw from 'twrnc';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
+import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 type SearchViewRouteProp = RouteProp<RootStackParamList, 'RecipeList'>;
 
@@ -12,7 +14,7 @@ const IngredientList: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<SearchViewRouteProp>();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   type Recipe = {
     id: number;
@@ -26,10 +28,27 @@ const IngredientList: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const { width } = Dimensions.get('window');
 
-  const handleSearch = (ingredientName: string) => {
+  const handleSearch = async(ingredientName: string) => {
     // Điều hướng đến màn hình tìm kiếm và truyền tên nguyên liệu
-    navigation.navigate('SearchView', { searchQuery: ingredientName });
-  };
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_BASE_URL}/search?q=${ingredientName}`);
+      const results = response.data;
+
+      if (results.length === 0) {
+          alert('Không tìm thấy kết quả nào!');
+          return;
+      }
+
+      // Điều hướng đến màn hình hiển thị kết quả
+      navigation.navigate('SearchView', { searchQuery: ingredientName, searchResults: results });
+  } catch (error) {
+      console.error("Lỗi khi tìm kiếm công thức:", error);
+      alert('Đã xảy ra lỗi khi tìm kiếm. Vui lòng thử lại!');
+  } finally {
+      setLoading(false);
+  }
+  };if (loading) return <ActivityIndicator size="large" color="blue" />;
 
   return (
     <View>
