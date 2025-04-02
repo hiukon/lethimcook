@@ -24,5 +24,5 @@ export type RootStackParamList = {
     Home: undefined;
     HomeLogin: undefined;
     FavoriteRecipes : undefined;
-    SearchView: { searchResults: SearchResult[] }; // Add SearchView with expected params
+    SearchView: { searchResults: SearchResult[] } | { searchQuery: string }; 
 };

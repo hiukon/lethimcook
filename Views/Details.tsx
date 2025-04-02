@@ -32,17 +32,16 @@ const Details: React.FC = () => {
   const prevStep = () => setCurrentStep((prev) => (prev !== null && prev > 0 ? prev - 1 : prev));
 
   const [loading, setLoading] = useState(false);
-  const INITIAL_HEIGHT = 300; // Kích thước ảnh ban đầu (có thể thay đổi)
-  const HEADER_HEIGHT = 64; // Kích thước header khi thu nhỏ
+  const INITIAL_HEIGHT = 300; 
+  const HEADER_HEIGHT = 64; 
 
-  // Chiều cao ảnh thu nhỏ dần từ INITIAL_HEIGHT về HEADER_HEIGHT
+  
   const imageHeight = animatedValue.interpolate({
     inputRange: [0, 200], 
     outputRange: [INITIAL_HEIGHT, HEADER_HEIGHT], 
     extrapolate: "clamp",
   });
 
-  // Dịch chuyển ảnh lên để giữ phần trung tâm
   const translateY = animatedValue.interpolate({
     inputRange: [0, 200],
     outputRange: [0, (HEADER_HEIGHT - INITIAL_HEIGHT) / 2], // Đẩy ảnh lên để giữ giữa
@@ -91,31 +90,6 @@ const Details: React.FC = () => {
         favoriteRecipes.push({ ...recipe, id: recipe.id.toString() });
         await AsyncStorage.setItem('favoriteRecipes', JSON.stringify(favoriteRecipes));
         Alert.alert('Thành công', 'Đã thêm vào món yêu thích!');
-  
-       // Nếu có mạng, lưu lên MongoDB
-if (netState.isConnected) {
-  try {
-    // Sửa lại URL cho đúng route "/api/favorites/addFavorite"
-    await axios.post(`${API_BASE_URL}/favorites/addFavorite`, {
-      name: recipe.name,
-      ingredients: recipe.ingredients,
-      steps: recipe.steps,
-      author: recipe.author,
-      image: recipe.image,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    Alert.alert('Thành công', 'Dữ liệu đã được lưu lên MongoDB!');
-  } catch (error) {
-    console.error('Lỗi khi lưu lên MongoDB:', error);
-    Alert.alert('Lỗi', 'Đã xảy ra lỗi khi lưu dữ liệu lên MongoDB.');
-  }
-} else {
-  Alert.alert('Không có kết nối mạng', 'Món ăn đã lưu offline. Hãy kết nối mạng để đồng bộ.');
-}
 
       } else {
         Alert.alert('Thông báo', 'Món ăn này đã có trong danh sách yêu thích!');
@@ -161,13 +135,10 @@ if (netState.isConnected) {
           [{ nativeEvent: { contentOffset: { y: animatedValue } } }],
           { useNativeDriver: false }
         )}
-        scrollEventThrottle={16}
-      >
+        scrollEventThrottle={16}>
         <Text style={tw`text-2xl font-bold px-3 `}>Tên món ăn: {recipe.name}</Text>
         <Text style={tw`text-lg px-3 mb-2 `}>Tác giả: {recipe.author}</Text>
-      
         <Text style={tw`h-8 w-auto border rounded-lg px-3 mt-2 mb-5 bg-gray-100 text-sm text-center p-1`}>🕒 15 phút</Text>
-       
         <Text style={tw`text-xl font-bold px-3 mt-3 mb-3`}>🛒 Nguyên liệu</Text>
         <FlatList
           data={recipe.ingredients}
@@ -177,22 +148,16 @@ if (netState.isConnected) {
           )}
           nestedScrollEnabled={true}
         />
-
         {/* Cách làm */}
         <View style={tw`flex-1 bg-white p-4`}>
-          {/* Ảnh món ăn */}
-
-
           {/* Nếu đang ở chế độ từng bước */}
           {currentStep !== null ? (
             <View style={tw`items-center`}>
-              <Image
-                source={{ uri: `https://source.unsplash.com/random?food${currentStep}` }}
-                style={tw`w-full h-64 rounded-lg mb-4`}
-              />
+              {/*<Image
+                source={{ uri: recipe.imagesteps }}
+                style={tw`w-full h-64 rounded-lg mb-4`}/> */}
               <Text style={tw`text-2xl font-bold`}>Bước {currentStep + 1}</Text>
               <Text style={tw`text-lg text-gray-600 text-center mt-2`}>{recipe.steps[currentStep]}</Text>
-
               {/* Nút điều hướng */}
               <View style={tw`flex-row mt-6`}>
                 <TouchableOpacity
@@ -221,7 +186,6 @@ if (netState.isConnected) {
           </TouchableOpacity>
             </View>
           ) : (
-            // Hiển thị danh sách tất cả bước
             <>
               <Text style={tw`text-xl font-bold px-3 mt-3`}>🍳 Các bước nấu món</Text>
               <FlatList

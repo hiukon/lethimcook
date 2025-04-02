@@ -61,7 +61,7 @@ const Login = () => {
    <> 
     <StatusBar backgroundColor={"black"} ></StatusBar>
       <ImageBackground style={tw` flex-1 justify-center items-center px-5 `}
-        source={require('../Img/vit1.jpg')}
+        source={require('../Img/bg_lg.jpg')}
         resizeMode="cover" >
         <Image source={require('../Img/pen.png')} style={tw`w-40 h-40 mb-9`} />
         <View style={tw`w-full border-2 border-gray-300 bg-black/30 rounded-lg p-3 mb-4 `}>

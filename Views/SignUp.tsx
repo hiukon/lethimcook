@@ -3,8 +3,8 @@ import { Text, View, Image, TextInput, TouchableOpacity, Alert, ImageBackground 
 import tw from 'twrnc';
 import axios from 'axios';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { API_BASE_URL } from '../config';
 
+const API_BASE_URL = 'http://192.168.31.188:3000/api/user';
 type RootStackParamList = {
   Login: undefined;
 };

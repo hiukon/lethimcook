@@ -9,7 +9,7 @@ import { RootStackParamList } from '@/types';
 import { API_BASE_URL } from '../config';
 
 
-const RecipeList = () => {
+const SearchRecipe = () => {
     const [recipes, setRecipes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -32,18 +32,29 @@ const RecipeList = () => {
     };
 
     const searchRecipes = async () => {
+        if (!searchQuery.trim()) {
+            alert('Vui lòng nhập từ khóa tìm kiếm!');
+            return;
+        }
         try {
+            setLoading(true);
             const response = await axios.get(`${API_BASE_URL}/search?q=${searchQuery}`);
-            setSearchResults(response.data); // Store search results
-            navigation.navigate('BottomTabNavigator', {
-                screen: 'Tìm kiếm',    
-                params: {screen: 'Search', params: { searchResults: response.data }}
-              });
+            const results = response.data;
+    
+            if (results.length === 0) {
+                alert('Không tìm thấy kết quả nào!');
+                return;
+            }
+    
+            // Điều hướng đến màn hình hiển thị kết quả
+            navigation.navigate('SearchView', { searchQuery: searchQuery, searchResults: results });
         } catch (error) {
             console.error("Lỗi khi tìm kiếm công thức:", error);
+            alert('Đã xảy ra lỗi khi tìm kiếm. Vui lòng thử lại!');
+        } finally {
+            setLoading(false);
         }
     };
-
     if (loading) return <ActivityIndicator size="large" color="blue" />;
 
     return (
@@ -67,4 +78,4 @@ const RecipeList = () => {
     );
 };
 
-export default RecipeList;
+export default SearchRecipe;

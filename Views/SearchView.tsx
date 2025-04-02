@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ScrollView, Image, FlatList } from 'react-native';
 import Header from './header';
 import SearchController from '@/controllers/SearchRecipe';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -12,7 +12,8 @@ type SearchViewRouteProp = RouteProp<RootStackParamList, 'SearchView'>;
 
 const SearchView: React.FC = () => {
   const route = useRoute<SearchViewRouteProp>();
-  const { searchResults } = route.params;
+  const searchQuery = 'searchQuery' in route.params ? route.params.searchQuery : '';
+  const searchResults = 'searchResults' in route.params ? route.params.searchResults : [];
   const [searchTerm, setSearchTerm] = useState('');
   const [recipes, setRecipes] = useState<SearchResult[]>(searchResults);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -30,13 +31,18 @@ const SearchView: React.FC = () => {
         <TouchableOpacity style={tw`p-2`}>
           <Text style={tw`text-lg`} onPress={() => navigation.goBack()}>←</Text>
         </TouchableOpacity>
-        <Header />
+        
         <View style={tw`flex-1`} >
         <SearchController />
         </View>
+        
+        <View style={tw`ml-1`} >
+        <Header />
+        </View>
       </View>
       <ScrollView style={tw`bg-orange-50`}>
-        <Text style={tw`text-black text-2xl p-2`}>Món mới nhất</Text>
+        {/* <Text style={tw`text-black text-2xl p-2`}>Món mới nhất</Text> */}
+        <Text style={tw`text-black text-2xl p-2`}>Kết quả tìm kiếm cho: {searchQuery}</Text>
         {recipes.map(recipe => (
           <TouchableOpacity
             key={recipe.id}
@@ -54,7 +60,9 @@ const SearchView: React.FC = () => {
           </TouchableOpacity>
         ))}
       </ScrollView>
+     
     </View>
+    
   );
 };
 
