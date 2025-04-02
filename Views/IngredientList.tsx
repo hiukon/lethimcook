@@ -48,7 +48,7 @@ const IngredientList: React.FC = () => {
   } finally {
       setLoading(false);
   }
-  };if (loading) return <ActivityIndicator size="large" color="blue" />;
+  };
 
   return (
     <View>
@@ -63,8 +63,7 @@ const IngredientList: React.FC = () => {
           <View style={tw`w-[${width / 2 - 22}px] items-center m-2.1`}>
             <TouchableOpacity
               style={tw`relative rounded-lg overflow-hidden`}
-              onPress={() => handleSearch(item.name)} // Gọi hàm tìm kiếm khi nhấn
-            >
+              onPress={() => handleSearch(item.name)} >
               <Image source={item.image} style={tw`w-49 h-33 rounded-lg`} />
               <Text style={tw`absolute bottom-0 text-white text-base font-bold p-1 w-full p-2 text-left`}>
                 {item.name}

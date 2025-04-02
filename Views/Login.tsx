@@ -26,7 +26,7 @@ const Login = () => {
     }
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
+      const response = await axios.post(`${API_BASE_URL}/user/login`, { email, password });
       Alert.alert('Thành công', 'Đăng nhập thành công!');
       setEmail('');
       setPassword('');
