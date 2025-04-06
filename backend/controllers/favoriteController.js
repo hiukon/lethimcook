@@ -1,13 +1,13 @@
-const mongoose = require("mongoose");
 const Favorite = require("../models/Favorite");
 const Recipe = require("../models/Recipe");
+
 
 // Lấy danh sách công thức yêu thích của user
 const getFavorites = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const userId = req.userId; // Lấy userId từ middleware
         if (!userId) return res.status(400).json({ message: "Thiếu userId" });
-
+        console.log(userId);
         const favorites = await Favorite.findOne({ userId });
         if (!favorites || !favorites.recipeIds.length) return res.json({ recipes: [] });
 
@@ -26,10 +26,12 @@ const getFavorites = async (req, res) => {
 // Thêm công thức vào danh sách yêu thích
 const addFavorite = async (req, res) => {
     try {
-        const { userId, recipeId } = req.body;
+        const { recipeId } = req.body;
+        const userId = req.userId; // Lấy userId từ middleware
         if (!userId || !recipeId) {
             return res.status(400).json({ message: "Thiếu userId hoặc recipeId" });
         }
+
         let favorites = await Favorite.findOne({ userId });
 
         if (!favorites) {
@@ -50,7 +52,8 @@ const addFavorite = async (req, res) => {
 // Xóa công thức khỏi danh sách yêu thích
 const removeFavorite = async (req, res) => {
     try {
-        const { userId, recipeId } = req.body;
+        const { recipeId } = req.body;
+        const userId = req.userId; // Lấy userId từ middleware
         if (!userId || !recipeId) {
             return res.status(400).json({ message: "Thiếu userId hoặc recipeId" });
         }

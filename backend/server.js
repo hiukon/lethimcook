@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 // Sử dụng routes
 app.use('/api', recipeRoutes);
 app.use('/api/user', userRoutes);
-app.use("/api/favorites", favoriteRoutes);
+app.use('/api', favoriteRoutes);
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0'; // Chạy trên IPv4
 

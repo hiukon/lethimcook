@@ -1,10 +1,11 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { getFavorites, addFavorite, removeFavorite } = require("../controllers/favoriteController");
+const { getFavorites, addFavorite, removeFavorite } = require('../controllers/favoriteController');
+const authMiddleware = require('../controllers/authMiddleware'); // Import middleware
 
-// Định nghĩa các routes
-router.get("/:userId", getFavorites);
-router.post("/add", addFavorite);
-router.post("/remove", removeFavorite);
+// Đảm bảo tất cả các route này đều được bảo vệ bằng middleware xác thực token
+router.get('/favorites', authMiddleware, getFavorites);
+router.post('/addfavorites', authMiddleware, addFavorite);
+router.delete('/removefavorites', authMiddleware, removeFavorite);
 
 module.exports = router;
