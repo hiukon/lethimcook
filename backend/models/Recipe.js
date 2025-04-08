@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const RecipeSchema = new mongoose.Schema({
+    id:{ type: Number, required: true },
     name: { type: String, required: true },
     author: { type: String, required: true }, // Thêm trường 'author'
     image: { type: String, required: true }, // Thêm trường 'image' để lưu URL ảnh

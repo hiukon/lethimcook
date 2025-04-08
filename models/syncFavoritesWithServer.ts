@@ -1,7 +1,7 @@
 import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const syncFavoritesWithServer = async (userId: any) => {
+const syncFavoritesWithServer = async (userId: string) => {
     try {
         const netInfo = await NetInfo.fetch(); // Lấy thông tin kết nối mạng
         if (!netInfo.isConnected) {
@@ -12,12 +12,9 @@ const syncFavoritesWithServer = async (userId: any) => {
         let favorites = await AsyncStorage.getItem("favorites");
         favorites = favorites ? JSON.parse(favorites) : [];
 
+        if (favorites && favorites.length === 0) return;
 
-        if (!favorites || favorites.length === 0) {
-          return;
-        }
-
-        await fetch("http://192.168.31.188:3000/api/favorites/add", {
+        await fetch("http://localhost:3000/api/favorites/add", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userId, recipeIds: favorites })

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -5,6 +6,7 @@ const recipeRoutes = require('./routes/recipeRoutes');
 const userRoutes = require('./routes/userRoutes');
 const favoriteRoutes = require("./routes/favoriteRoutes");
 const path = require('path');
+
 
 const app = express();
 app.use(express.json());
@@ -30,6 +32,7 @@ app.use('/api/user', userRoutes);
 app.use('/api', favoriteRoutes);
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0'; // Chạy trên IPv4
+
 
 app.listen(PORT, HOST, () => {
     console.log(`🚀 Server chạy tại http://${HOST}:${PORT}`);

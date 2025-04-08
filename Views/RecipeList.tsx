@@ -6,6 +6,7 @@ import axios from 'axios';
 import tw from 'twrnc';
 import { RootStackParamList } from '@/types';
 import { getUserData } from '../models/authHelper';
+import Login from './Login';
 import { API_BASE_URL } from '../config';
 
 type SearchViewRouteProp = RouteProp<RootStackParamList, 'RecipeList'>;
