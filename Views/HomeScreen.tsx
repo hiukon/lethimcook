@@ -1,5 +1,5 @@
 import React,{ useState } from 'react';
-import { FlatList, Text, StyleSheet, View, TouchableOpacity, SafeAreaView } from 'react-native';
+import { FlatList, Text, StyleSheet, View, TouchableOpacity,ScrollView, SafeAreaView } from 'react-native';
 import Header from './header';
 import IngredientList from './IngredientList';
 import RecipeList from './RecipeList';
@@ -29,20 +29,13 @@ const HomeScreen = () => {
           <View style={tw`px-4`} >
             <SearchController/>
           </View>
-        <View style={tw`flex-1 bg-orange-50  px-2 rounded-lg`}>
-        <FlatList style={tw`flex-1 bg-orange-50  `}
-          ListHeaderComponent={
-            <>
+        <ScrollView  style={tw`flex-1 bg-orange-50  px-2 rounded-lg`}>
+       
               <IngredientList />
               <Text style={tw`mt-2 text-xl`}>Món ăn mới lên sóng</Text>
               <RecipeList/>
-            </>
-          }
-          data={[]} 
-          renderItem={null} 
-          keyExtractor={(_, index) => index.toString()}
-        />
-        </View>
+           
+        </ScrollView>
         {isSidebarOpen && <Sidebar isOpen={isSidebarOpen} closeMenu={() => setSidebarOpen(false)} />}
         </View>
 
