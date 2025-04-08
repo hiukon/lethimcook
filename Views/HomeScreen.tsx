@@ -4,7 +4,7 @@ import Header from './header';
 import IngredientList from './IngredientList';
 import RecipeList from './RecipeList';
 import tw from 'twrnc';
-import SearchController from '@/controllers/SearchRecipe';
+import SearchController from './searchRecipe';
 import BottomTabNavigator from '@/navigation/BottomTabNavigator';
 import Sidebar from "./Sidebar"; 
 import { useSafeAreaInsets } from "react-native-safe-area-context";

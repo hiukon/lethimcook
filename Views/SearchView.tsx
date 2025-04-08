@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView, Image, FlatList } from 'react-native';
 import Header from './header';
-import SearchController from '@/controllers/SearchRecipe';
+import SearchController from './searchRecipe';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { RootStackParamList, SearchResult } from '@/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';

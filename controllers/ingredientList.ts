@@ -1,14 +1,12 @@
-
 import axios from 'axios';
-import { API_BASE_URL } from '../config';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { API_BASE_URL } from '@/config';
 import { RootStackParamList } from '@/types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-// Hàm xử lý tìm kiếm theo nguyên liệu
 export const handleIngredientSearch = async (
   ingredientName: string,
   navigation: NativeStackNavigationProp<RootStackParamList>,
-  setLoading: (value: boolean) => void
+  setLoading: (loading: boolean) => void
 ) => {
   try {
     setLoading(true);
@@ -20,12 +18,9 @@ export const handleIngredientSearch = async (
       return;
     }
 
-    navigation.navigate('SearchView', {
-      searchQuery: ingredientName,
-      searchResults: results,
-    });
+    navigation.navigate('SearchView', { searchQuery: ingredientName, searchResults: results });
   } catch (error) {
-    console.error('Lỗi khi tìm kiếm công thức:', error);
+    console.error("Lỗi khi tìm kiếm công thức:", error);
     alert('Đã xảy ra lỗi khi tìm kiếm. Vui lòng thử lại!');
   } finally {
     setLoading(false);

@@ -1,36 +1,36 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import {
-  View, Text, Image, FlatList, ScrollView, TouchableOpacity,
-  TextInput, ActivityIndicator, Alert, Animated, ImageBackground
+  View, Text, Image, FlatList, ScrollView, TouchableOpacity, TextInput, ActivityIndicator,
+  Animated, ImageBackground
 } from 'react-native';
-
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
-
-import tw from 'twrnc';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import tw from 'twrnc';
 
-import Header from './header'; // UI component
-import { fetchSimilarRecipes, handleFavorite } from '../controllers/detailsController';
+import Header from './header';
+import { useDetailsController } from '@/controllers/detailsController';
 
 const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'Details'>;
 
 const Details: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState<number | null>(null);
-  const [similarRecipes, setSimilarRecipes] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<DetailsScreenRouteProp>();
   const { recipe } = route.params;
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const animatedValue = useRef(new Animated.Value(0)).current;
+
+  const {
+    currentStep, similarRecipes, loading,
+    startCooking, nextStep, prevStep,
+    handleFavorite, setCurrentStep
+  } = useDetailsController(recipe);
+
   const INITIAL_HEIGHT = 300;
   const HEADER_HEIGHT = 64;
 
-  // Scroll animations
   const imageHeight = animatedValue.interpolate({
     inputRange: [0, 200],
     outputRange: [INITIAL_HEIGHT, HEADER_HEIGHT],
@@ -42,24 +42,6 @@ const Details: React.FC = () => {
     outputRange: [0, 1],
     extrapolate: "clamp",
   });
-
-  useEffect(() => {
-    const loadRecipes = async () => {
-      setLoading(true);
-      try {
-        const result = await fetchSimilarRecipes(recipe);
-        setSimilarRecipes(result);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadRecipes();
-  }, []);
-
-  const startCooking = () => setCurrentStep(0);
-  const nextStep = () => setCurrentStep((prev) => (prev !== null && prev < recipe.steps.length - 1 ? prev + 1 : prev));
-  const prevStep = () => setCurrentStep((prev) => (prev !== null && prev > 0 ? prev - 1 : prev));
 
   if (loading) return <ActivityIndicator size="large" color="blue" />;
 
@@ -76,7 +58,7 @@ const Details: React.FC = () => {
           <Animated.Text style={[tw`text-lg font-bold text-white`, { opacity: titleOpacity }]}>
             {recipe.name}
           </Animated.Text>
-          <TouchableOpacity style={tw`flex-row items-center h-8 px-3 p-1 rounded-lg`}>
+          <TouchableOpacity>
             <Icon name="filter" size={20} color="white" />
           </TouchableOpacity>
         </Animated.View>
@@ -102,31 +84,33 @@ const Details: React.FC = () => {
           renderItem={({ item }) => (
             <Text style={tw`text-xl border-b-2 border-orange-500 p-2`}>• {item}</Text>
           )}
+          nestedScrollEnabled={true}
         />
 
         <View style={tw`flex-1 bg-white p-4`}>
           {currentStep !== null ? (
             <View style={tw`items-center`}>
               <Text style={tw`text-2xl font-bold`}>Bước {currentStep + 1}</Text>
-              <Text style={tw`text-lg text-gray-600 text-center mt-2`}>
-                {recipe.steps[currentStep]}
-              </Text>
+              <Text style={tw`text-lg text-gray-600 text-center mt-2`}>{recipe.steps[currentStep]}</Text>
+
               <View style={tw`flex-row mt-6`}>
                 <TouchableOpacity
                   onPress={prevStep}
                   disabled={currentStep === 0}
-                  style={tw`px-4 py-2 bg-gray-300 rounded-lg mx-2 ${currentStep === 0 ? 'opacity-50' : ''}`}
+                  style={tw`px-4 py-2 bg-gray-300 rounded-lg mx-2 ${currentStep === 0 ? "opacity-50" : ""}`}
                 >
                   <Text style={tw`text-lg`}>Quay lại</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
                   onPress={nextStep}
                   disabled={currentStep === recipe.steps.length - 1}
-                  style={tw`px-4 py-2 bg-orange-500 rounded-lg mx-2 ${currentStep === recipe.steps.length - 1 ? 'opacity-50' : ''}`}
+                  style={tw`px-4 py-2 bg-orange-500 rounded-lg mx-2 ${currentStep === recipe.steps.length - 1 ? "opacity-50" : ""}`}
                 >
                   <Text style={tw`text-lg text-white`}>Tiếp theo</Text>
                 </TouchableOpacity>
               </View>
+
               <TouchableOpacity
                 onPress={() => setCurrentStep(null)}
                 style={tw`mt-6 px-4 py-2 bg-red-500 rounded-lg`}
@@ -159,6 +143,16 @@ const Details: React.FC = () => {
           )}
         </View>
 
+        <View>
+          <Text style={tw`text-black text-l mr-2 px-2 mt-2`}>Bày tỏ cảm xúc của bạn</Text>
+          <View style={tw`flex-row px-4 mb-4`}>
+            <TouchableOpacity style={tw`flex-row items-center`}>
+              <Text style={tw`text-black text-xl mr-2`}>❤️</Text>
+              <Text style={tw`text-black`}>1</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         <View style={tw`px-4 my-4 items-center`}>
           <TouchableOpacity style={tw`bg-orange-100 border p-3 rounded-lg mb-3`}>
             <Text style={tw`text-black text-center`}>Gửi cooksnap đầu tiên mở hàng!</Text>
@@ -166,16 +160,16 @@ const Details: React.FC = () => {
 
           <TouchableOpacity
             style={tw`bg-orange-100 border p-3 rounded-lg mb-3 flex-row items-center justify-center`}
-            onPress={() => handleFavorite(recipe)}
+            onPress={handleFavorite}
           >
             <Text style={tw`text-black`}>🔔 Thêm vào Hôm Nay</Text>
           </TouchableOpacity>
 
           <Text style={tw`text-black text-center mb-3`}>ID Công thức: {recipe.id}</Text>
           <Text style={tw`text-black text-center mb-3`}>Lên sóng vào ngày 22 tháng 3, 2025</Text>
-          <Text style={tw`text-black text-center mb-3`}>Lên sóng bởi: {recipe.author}</Text>
+          <Text style={tw`text-black mb-4`}>Lên sóng bởi: {recipe.author}</Text>
 
-          <TouchableOpacity style={tw`bg-orange-100 border h-10 w-50 p-2 rounded-lg items-center justify-center`}>
+          <TouchableOpacity style={tw`bg-orange-100 border h-10 items-center justify-center w-50 p-2 rounded-lg`}>
             <Text style={tw`text-black text-center`}>Kết bạn bếp</Text>
           </TouchableOpacity>
 
@@ -183,12 +177,15 @@ const Details: React.FC = () => {
             <Text style={tw`text-black text-l mr-2 px-2 mt-3 mb-2`}>💬 Bình Luận</Text>
             <View style={tw`flex-row items-center mb-4 bg-gray-100 rounded-full px-2 py-1`}>
               <Header />
-              <TextInput placeholder="Thêm bình luận..." placeholderTextColor="black" style={tw`text-black flex-1 p-2`} />
+              <TextInput
+                placeholder="Thêm bình luận..."
+                placeholderTextColor="black"
+                style={tw`text-black flex-1 p-2`}
+              />
             </View>
           </View>
         </View>
 
-        {/* Công thức tương tự */}
         <Text style={tw`text-xl font-bold px-3 mt-5 mb-2`}>Các món có nguyên liệu tương tự</Text>
         {similarRecipes.length === 0 ? (
           <Text style={tw`px-3 text-gray-500`}>Không tìm thấy công thức tương tự.</Text>
@@ -201,8 +198,8 @@ const Details: React.FC = () => {
                 <View style={tw`flex-row flex-wrap`}>
                   <Image source={{ uri: item.image }} style={tw`w-40 h-30 my-2 rounded-lg px-1`} />
                   <View style={tw`flex-1`}>
-                    <Text style={tw`px-2 text-xl`}>• {item.name}</Text>
-                    <Text style={tw`px-2 text-base`}>Nguyên liệu: {item.ingredients.join(', ')}</Text>
+                    <Text style={tw`px-2 text-xl mt-4`}>• {item.name}</Text>
+                    <Text style={tw`px-2`}>Nguyên liệu: {item.ingredients.join(', ')}</Text>
                   </View>
                 </View>
               </TouchableOpacity>

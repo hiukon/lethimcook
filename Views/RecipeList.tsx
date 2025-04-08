@@ -1,15 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import tw from 'twrnc';
-import useRecipeListController from '../controllers/useRecipeListController';
+import { RootStackParamList } from '@/types';
+import { fetchRandomRecipes, Recipe } from '@/controllers/recipeList';
+import { getUserData } from '@/models/authHelper';
 
-const RecipeList = () => {
-  const {
-    recipes,
-    loading,
-    isAuthenticated,
-    handlePressRecipe,
-  } = useRecipeListController();
+type SearchViewRouteProp = RouteProp<RootStackParamList, 'RecipeList'>;
+
+const RecipeList: React.FC = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<SearchViewRouteProp>();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handlePressRecipe = (recipe: Recipe) => {
+    navigation.navigate('Details', { recipe: { ...recipe, id: Number(recipe.id) } });
+  };
+
+  useEffect(() => {
+    const checkAuthAndFetch = async () => {
+      const { token } = await getUserData();
+      if (!token) {
+        navigation.navigate('Login');
+      } else {
+        setIsAuthenticated(true);
+        setLoading(true);
+        try {
+          const data = await fetchRandomRecipes();
+          setRecipes(data);
+        } catch (error) {
+          console.error('Lỗi khi lấy danh sách công thức:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    checkAuthAndFetch();
+  }, []);
 
   if (!isAuthenticated) return null;
   if (loading) return <ActivityIndicator size="large" color="blue" />;
