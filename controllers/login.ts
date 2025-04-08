@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '@/config';
 import { Alert } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
-
+import {setUserData} from '@/models/authHelper';
 type RootStackParamList = {
   SignUp: undefined;
   HomeScreen: undefined;
@@ -28,13 +28,10 @@ export const handleLogin = async (
     Alert.alert('Thành công', 'Đăng nhập thành công!');
     setEmail('');
     setPassword('');
-    const { token, user } = response.data;
-    await AsyncStorage.setItem('user_token', token);
-    await AsyncStorage.setItem('user_data', JSON.stringify({
-      username: user?.username,
-      userId: user?.userId
-    }));
-
+    const { token, refreshToken, user } = response.data;
+    // Luu thong tin user vao trong asyncstorage 
+    setUserData(token, refreshToken, user);
+   
     navigation.navigate('BottomTabNavigator', {
       screen: 'TabHome',
       params: { screen: 'Home' }

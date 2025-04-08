@@ -1,15 +1,26 @@
 // models/favorite.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUserData } from './authHelper';
+import axios from 'axios';
+import { API_BASE_URL } from '@/config';
+import { secureRequest } from './authorizedRequest'; 
 
 export const getFavoriteRecipes = async () => {
   try {
-    const data = await AsyncStorage.getItem('favoriteRecipes');
-    return data ? JSON.parse(data) : [];
-  } catch (error) {
-    throw new Error('Lỗi khi tải công thức yêu thích');
+    const response = await secureRequest({
+      method: 'get',
+      url: `${API_BASE_URL}/favorites`,
+    });
+
+    await AsyncStorage.setItem('favoriteRecipes', JSON.stringify(response.data));
+    return response.data;
+  } catch (err) {
+    console.error('Lỗi khi tải danh sách yêu thích:', err);
+    throw err;
   }
 };
 
+// Thêm hoặc xóa món yêu thích (tự động gọi add/remove theo trạng thái hiện tại)
 export const updateFavoriteRecipes = async (recipe: any) => {
   try {
     const stored = await AsyncStorage.getItem('favoriteRecipes');
@@ -20,13 +31,26 @@ export const updateFavoriteRecipes = async (recipe: any) => {
 
     if (exists) {
       updated = parsed.filter((item: any) => item.id !== recipe.id);
+
+      await secureRequest({
+        method: 'delete',
+        url: `${API_BASE_URL}/removefavorites`,
+        data: { recipeId: recipe.id.toString() },
+      });
     } else {
       updated = [...parsed, recipe];
+
+      await secureRequest({
+        method: 'post',
+        url: `${API_BASE_URL}/addfavorites`,
+        data: { recipeId: recipe.id.toString() },
+      });
     }
 
     await AsyncStorage.setItem('favoriteRecipes', JSON.stringify(updated));
     return updated;
   } catch (error) {
-    throw new Error('Lỗi khi cập nhật món ăn yêu thích');
+    console.error('Lỗi khi cập nhật món ăn yêu thích:', error);
+    throw error;
   }
 };

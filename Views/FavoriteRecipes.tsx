@@ -14,7 +14,7 @@ const FavoriteRecipes: React.FC = () => {
   const [favoriteRecipes, setFavoriteRecipes] = useState<any[]>([]);
   const isFocused = useIsFocused();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
+  
   useEffect(() => {
     if (isFocused) {
       fetchFavorites();
@@ -23,8 +23,8 @@ const FavoriteRecipes: React.FC = () => {
 
   const fetchFavorites = async () => {
     try {
-      const data = await loadFavorites();
-      setFavoriteRecipes(data);
+      const data = await loadFavorites(navigation);
+      setFavoriteRecipes(data.recipes);
     } catch (error) {
       console.error(error);
     }
