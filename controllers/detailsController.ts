@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import { Alert } from 'react-native';
-import { API_BASE_URL } from '@/config';
 import { updateFavoriteRecipes } from '@/models/favorite';
+import { getAllRecipes } from './services/recipeApi';
 
 export const useDetailsController = (recipe: any) => {
   const [currentStep, setCurrentStep] = useState<number | null>(null);
@@ -17,8 +15,8 @@ export const useDetailsController = (recipe: any) => {
   const fetchSimilarRecipes = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/recipes`);
-      const filteredRecipes = response.data.filter(
+      const data = await getAllRecipes();
+      const filteredRecipes = data.filter(
         (item: any) =>
           item.id !== recipe.id &&
           item.ingredients.some((ing: string) => recipe.ingredients.includes(ing))

@@ -1,10 +1,9 @@
-// controllers/login.ts
-import axios from 'axios';
-import { API_BASE_URL } from '@/config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// src/controllers/login.ts
 import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp } from '@react-navigation/native';
 import { setUserData } from '@/models/authHelper';
+import { loginUser } from './services/authApi';
 
 export const handleLogin = async (
   email: string,
@@ -18,21 +17,15 @@ export const handleLogin = async (
     Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ email và mật khẩu!');
     return;
   }
-  
 
   setLoading(true);
   try {
-    const response = await axios.post(`${API_BASE_URL}/user/login`, {
-      email,
-      password,
-    });
+    const { token, refreshToken, user } = await loginUser(email, password);
 
-    const { token, refreshToken, user } = response.data;
     setUserData(token, refreshToken, user);
-    
+
     Alert.alert('Thành công', 'Đăng nhập thành công!');
-    
-    // ✅ CHỖ NÀY PHẢI NAVIGATE RA TRANG CHỦ
+
     navigation.reset({
       index: 0,
       routes: [{ name: 'BottomTabNavigator', params: { screen: 'Trang chủ' } }],
@@ -41,10 +34,10 @@ export const handleLogin = async (
     setEmail('');
     setPassword('');
   } catch (error: any) {
-    if (axios.isAxiosError(error)) {
-      Alert.alert('Lỗi', error.response?.data?.message || 'Đăng nhập thất bại!');
+    if (error?.response?.data?.message) {
+      Alert.alert('Lỗi', error.response.data.message);
     } else {
-      Alert.alert('Lỗi', 'Có lỗi xảy ra!');
+      Alert.alert('Lỗi', 'Đăng nhập thất bại!');
     }
   } finally {
     setLoading(false);

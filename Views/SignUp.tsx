@@ -3,7 +3,7 @@ import { Text, View, Image, TextInput, TouchableOpacity, Alert, ImageBackground 
 import tw from 'twrnc';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '@/types';
-import { handleRegister } from '@/controllers/signUp';
+import { handleRegister } from '@/controllers/services/signUp';
 
 const SignUpScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();

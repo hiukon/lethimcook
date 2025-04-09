@@ -4,7 +4,7 @@ import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import tw from 'twrnc';
 import { RootStackParamList } from '@/types';
-import { fetchRandomRecipes, Recipe } from '@/controllers/recipeList';
+import { fetchRandomRecipes, Recipe } from '@/controllers/services/recipeList';
 import { getUserData } from '@/models/authHelper';
 
 type SearchViewRouteProp = RouteProp<RootStackParamList, 'RecipeList'>;

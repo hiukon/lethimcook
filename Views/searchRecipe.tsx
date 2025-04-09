@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
-import { fetchAllRecipes, searchRecipesByQuery } from '@/controllers/searchRecipe';
+import { fetchAllRecipes, searchRecipesByQuery } from '@/controllers/services/searchRecipe';
 
 const SearchRecipe = () => {
   const [recipes, setRecipes] = useState([]);
