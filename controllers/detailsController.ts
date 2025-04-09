@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Alert } from 'react-native';
 import { API_BASE_URL } from '@/config';
+import { updateFavoriteRecipes } from '@/models/favorite';
 
 export const useDetailsController = (recipe: any) => {
   const [currentStep, setCurrentStep] = useState<number | null>(null);
@@ -32,19 +33,16 @@ export const useDetailsController = (recipe: any) => {
 
   const handleFavorite = async () => {
     try {
-      let favoriteRecipes = JSON.parse(await AsyncStorage.getItem('favoriteRecipes') || '[]') || [];
-      const isExist = favoriteRecipes.some((item: { id: string }) => item.id === recipe.id.toString());
+      const updated = await updateFavoriteRecipes(recipe);
+      const isExist = updated.some((item: { id: string }) => item.id === recipe.id);
 
-      if (!isExist) {
-        favoriteRecipes.push({ ...recipe, id: recipe.id.toString() });
-        await AsyncStorage.setItem('favoriteRecipes', JSON.stringify(favoriteRecipes));
-        Alert.alert('Thành công', 'Đã thêm vào món yêu thích!');
-      } else {
-        Alert.alert('Thông báo', 'Món ăn này đã có trong danh sách yêu thích!');
-      }
+      Alert.alert(
+        'Thông báo',
+        isExist ? 'Đã thêm vào món yêu thích!' : 'Đã xóa khỏi danh sách yêu thích!'
+      );
     } catch (error) {
-      console.error('Lỗi khi lưu món ăn:', error);
-      Alert.alert('Lỗi', 'Đã xảy ra lỗi khi lưu món ăn.');
+      console.error('Lỗi khi cập nhật yêu thích:', error);
+      Alert.alert('Lỗi', 'Đã xảy ra lỗi khi cập nhật yêu thích.');
     }
   };
 

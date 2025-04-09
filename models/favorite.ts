@@ -40,6 +40,7 @@ export const updateFavoriteRecipes = async (recipe: any) => {
     let updated;
 
     if (exists) {
+      console.log('123');
       updated = parsed.filter((item: any) => item.id !== recipe.id);
 
       await secureRequest({
@@ -48,6 +49,7 @@ export const updateFavoriteRecipes = async (recipe: any) => {
         data: { recipeId: recipe.id.toString() },
       });
     } else {
+      console.log('3456');
       updated = [...parsed, recipe];
 
       await secureRequest({
