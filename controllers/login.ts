@@ -4,6 +4,7 @@ import { API_BASE_URL } from '@/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
+import { setUserData } from '@/models/authHelper';
 
 export const handleLogin = async (
   email: string,
@@ -17,6 +18,7 @@ export const handleLogin = async (
     Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ email và mật khẩu!');
     return;
   }
+  
 
   setLoading(true);
   try {
@@ -25,10 +27,9 @@ export const handleLogin = async (
       password,
     });
 
-    const { token, user } = response.data;
-
-    await AsyncStorage.setItem('userData', JSON.stringify({ token, user }));
-
+    const { token, refreshToken, user } = response.data;
+    setUserData(token, refreshToken, user);
+    
     Alert.alert('Thành công', 'Đăng nhập thành công!');
     
     // ✅ CHỖ NÀY PHẢI NAVIGATE RA TRANG CHỦ

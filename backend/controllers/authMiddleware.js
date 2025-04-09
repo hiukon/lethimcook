@@ -6,7 +6,7 @@ const REFRESH_SECRET = 'REFRESH_SECRET_KEY';
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
   const refreshToken = req.headers['x-refresh-token'];
-
+  console.log('11',authHeader,'22',refreshToken);
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'No access token provided' });
   }

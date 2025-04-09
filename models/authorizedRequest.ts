@@ -13,7 +13,7 @@ type NavigationProps = NavigationProp<RootStackParamList>;
 export const secureRequest = async (axiosConfig: any) => {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { token, refreshToken } = await getUserData();
-
+  
   try {
     const response = await axios({
       ...axiosConfig,
