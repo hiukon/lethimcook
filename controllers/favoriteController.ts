@@ -17,6 +17,5 @@ export const loadFavorites = async (
 };
 
 export const toggleFavoriteRecipe = async (recipe: any) => {
-  const { token }  = await getUserData();
   return await updateFavoriteRecipes(recipe);
 };
