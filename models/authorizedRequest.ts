@@ -11,7 +11,7 @@ type RootStackParamList = {
 type NavigationProps = NavigationProp<RootStackParamList>;
 
 export const secureRequest = async (axiosConfig: any) => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { token, refreshToken } = await getUserData();
 
   try {
@@ -40,7 +40,7 @@ export const secureRequest = async (axiosConfig: any) => {
   } catch (error: any) {
     if (error.response?.status === 403 || error.response?.status === 401) {
       // 👉 Điều hướng về màn hình login nếu token/refresh token không hợp lệ
-      navigation.navigate('BottomTabNavigator', { screen: 'login' }); // hoặc NavigationService.navigate nếu bạn dùng custom điều hướng
+      // navigation.navigate('BottomTabNavigator', { screen: 'login' }); // hoặc NavigationService.navigate nếu bạn dùng custom điều hướng
     //  throw new Error('Phiên đăng nhập đã hết, vui lòng đăng nhập lại');
     }
 

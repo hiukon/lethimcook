@@ -24,7 +24,17 @@ export const getFavoriteRecipes = async () => {
 export const updateFavoriteRecipes = async (recipe: any) => {
   try {
     const stored = await AsyncStorage.getItem('favoriteRecipes');
-    const parsed = stored ? JSON.parse(stored) : [];
+
+    let parsed: any[] = [];
+
+    try {
+      const raw = stored ? JSON.parse(stored) : [];
+      parsed = Array.isArray(raw) ? raw : [];
+    } catch (parseError) {
+      console.warn('Dữ liệu AsyncStorage bị lỗi, reset lại:', parseError);
+      parsed = [];
+      await AsyncStorage.removeItem('favoriteRecipes'); // xóa dữ liệu lỗi
+    }
 
     const exists = parsed.some((item: any) => item.id === recipe.id);
     let updated;
