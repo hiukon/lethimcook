@@ -16,7 +16,7 @@ export const getFavoriteRecipes = async () => {
     return response.data;
   } catch (err) {
     console.error('Lỗi khi tải danh sách yêu thích:', err);
-    throw err;
+    // throw err;
   }
 };
 

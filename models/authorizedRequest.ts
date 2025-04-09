@@ -1,9 +1,17 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserData } from '@/models/authHelper';
-import { navigate } from '@/navigation/RootNavigation'; // <-- tùy vào cấu trúc điều hướng app bạn
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+
+type RootStackParamList = {
+    BottomTabNavigator: { screen: string };
+    login: undefined;
+  };
+  
+type NavigationProps = NavigationProp<RootStackParamList>;
 
 export const secureRequest = async (axiosConfig: any) => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { token, refreshToken } = await getUserData();
 
   try {
@@ -32,8 +40,8 @@ export const secureRequest = async (axiosConfig: any) => {
   } catch (error: any) {
     if (error.response?.status === 403 || error.response?.status === 401) {
       // 👉 Điều hướng về màn hình login nếu token/refresh token không hợp lệ
-      navigate('Login'); // hoặc NavigationService.navigate nếu bạn dùng custom điều hướng
-      throw new Error('Phiên đăng nhập đã hết, vui lòng đăng nhập lại');
+      navigation.navigate('BottomTabNavigator', { screen: 'login' }); // hoặc NavigationService.navigate nếu bạn dùng custom điều hướng
+    //  throw new Error('Phiên đăng nhập đã hết, vui lòng đăng nhập lại');
     }
 
     throw error;
