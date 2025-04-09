@@ -63,7 +63,7 @@ const Login = () => {
               <Text style={tw`text-white text-lg font-bold`}>Đăng Nhập</Text>
             )}
           </TouchableOpacity>
-
+          
           <Text style={tw`text-white text-center`}>
             Bạn chưa có tài khoản?{' '}
             <Text
