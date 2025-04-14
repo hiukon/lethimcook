@@ -43,14 +43,50 @@ const Details: React.FC = () => {
     extrapolate: "clamp",
   });
 
+  const shakeAnim = useRef(new Animated.Value(0)).current;
+
+  const startShake = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnim, {
+        toValue: 10,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: -10,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: 6,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: -6,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: 0,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const handlePress = () => {
+    startShake(); // chạy hiệu ứng
+    handleFavorite(); // gọi hàm khi nhấn
+  };
+
   if (loading) return <ActivityIndicator size="large" color="blue" />;
 
   return (
     <>
       <AnimatedImageBackground
         source={{ uri: recipe.image }}
-        style={[tw`w-full`, { height: imageHeight }]}
-      >
+        style={[tw`w-full`, { height: imageHeight }]}>
         <Animated.View style={tw`absolute top-0 left-0 right-0 flex-row justify-between items-center px-4 py-3`}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Text style={tw`text-2xl text-white`}>←</Text>
@@ -71,18 +107,17 @@ const Details: React.FC = () => {
           [{ nativeEvent: { contentOffset: { y: animatedValue } } }],
           { useNativeDriver: false }
         )}
-        scrollEventThrottle={16}
-      >
+        scrollEventThrottle={16}>
         <Text style={tw`text-2xl font-bold px-3`}>Tên món ăn: {recipe.name}</Text>
         <Text style={tw`text-lg px-3 mb-2`}>Tác giả: {recipe.author}</Text>
-        <Text style={tw`h-8 border rounded-lg px-3 mt-2 mb-5 bg-gray-100 text-sm text-center p-1`}>🕒 15 phút</Text>
+        <Text style={tw`h-8 border rounded-xl px-3 mt-2 mb-5 bg-gray-100 text-sm text-center p-1`}>🕒 15 phút</Text>
 
         <Text style={tw`text-xl font-bold px-3 mt-3 mb-3`}>🛒 Nguyên liệu</Text>
         <FlatList
           data={recipe.ingredients}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <Text style={tw`text-xl border-b-2 border-orange-500 p-2`}>• {item}</Text>
+            <Text style={tw`text-xl border-b-2 border-orange-200 p-2`}>• {item}</Text>
           )}
           nestedScrollEnabled={true}
         />
@@ -129,7 +164,7 @@ const Details: React.FC = () => {
                     <View style={tw`w-8 h-8 bg-orange-300 rounded-full justify-center items-center`}>
                       <Text style={tw`text-lg font-bold`}>{index + 1}</Text>
                     </View>
-                    <Text style={tw`px-3 text-2xl`}>{item}</Text>
+                    <Text style={tw`px-3 text-xl`}>{item}</Text>
                   </View>
                 )}
               />
@@ -143,48 +178,56 @@ const Details: React.FC = () => {
           )}
         </View>
 
-        <View>
-          <Text style={tw`text-black text-l mr-2 px-2 mt-2`}>Bày tỏ cảm xúc của bạn</Text>
-          <View style={tw`flex-row px-4 mb-4`}>
-            <TouchableOpacity style={tw`flex-row items-center`}>
-              <Text style={tw`text-black text-xl mr-2`}>❤️</Text>
-              <Text style={tw`text-black`}>1</Text>
+        <View style={tw`flex-row mr-2 px-2 mt-2`} >
+          <Text style={tw`text-black text-l `}>Bày tỏ cảm xúc của bạn  </Text>
+            <TouchableOpacity style={tw`flex-row items-center bg-gray-100 ml-1  border rounded-xl`}>
+              <Text style={tw`text-black  text-l m-0.5`}> ❤️ </Text>
             </TouchableOpacity>
-          </View>
+            <TouchableOpacity style={tw`flex-row items-center bg-gray-100 ml-1  border rounded-xl`}>
+              <Text style={tw`text-black text-l m-0.5`}> 😋 </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={tw`flex-row items-center bg-gray-100 ml-1 border rounded-xl`}>
+              <Text style={tw`text-black text-l m-0.5`}> 👏 </Text>
+            </TouchableOpacity>
+          
         </View>
 
-        <View style={tw`px-4 my-4 items-center`}>
-          <TouchableOpacity style={tw`bg-orange-100 border p-3 rounded-lg mb-3`}>
-            <Text style={tw`text-black text-center`}>Gửi cooksnap đầu tiên mở hàng!</Text>
+        <View style={tw`flex-row px-4 my-4 `}>
+          <TouchableOpacity style={tw`bg-orange-100 flex-row border p-1 rounded-2xl mb-3 mr-6`}>
+            <Icon name="camera" size={15} color="black" style={tw`text-black item-center ml-1 mt-0.5 `} />
+            <Text style={tw`text-black text-center `}> Gửi cooksnap đầu tiên! </Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={tw`bg-orange-100 border p-3 rounded-lg mb-3 flex-row items-center justify-center`}
-            onPress={handleFavorite}
-          >
-            <Text style={tw`text-black`}>🔔 Thêm vào Hôm Nay</Text>
-          </TouchableOpacity>
-
+          
+          <Animated.View style={{ transform: [{ translateX: shakeAnim }] }}>
+            <TouchableOpacity
+              style={tw`bg-orange-100 flex-row border p-1 rounded-2xl mb-3 mr-6`}
+              onPress={handlePress}>
+              <Text style={tw`text-black text-l`}> ⭐ Thêm món ngon </Text>
+            </TouchableOpacity>
+          </Animated.View> 
+          </View>
+          <View style={tw` items-center`}>
           <Text style={tw`text-black text-center mb-3`}>ID Công thức: {recipe.id}</Text>
-          <Text style={tw`text-black text-center mb-3`}>Lên sóng vào ngày 22 tháng 3, 2025</Text>
-          <Text style={tw`text-black mb-4`}>Lên sóng bởi: {recipe.author}</Text>
+            <Text style={tw`text-black text-center mb-3`}>Lên sóng vào ngày 22 tháng 3, 2025</Text>
+            <Header />
+            <Text style={tw`text-black mb-4`}>Lên sóng bởi: {recipe.author}</Text>
 
-          <TouchableOpacity style={tw`bg-orange-100 border h-10 items-center justify-center w-50 p-2 rounded-lg`}>
-            <Text style={tw`text-black text-center`}>Kết bạn bếp</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={tw`bg-orange-100 border h-10 items-center justify-center w-50 p-2 rounded-lg`}>
+              <Text style={tw`text-black text-center`}>Kết bạn bếp</Text>
+            </TouchableOpacity>
 
-          <View style={tw`border-t w-full border-gray-500 pt-4 mt-10`}>
-            <Text style={tw`text-black text-l mr-2 px-2 mt-3 mb-2`}>💬 Bình Luận</Text>
-            <View style={tw`flex-row items-center mb-4 bg-gray-100 rounded-full px-2 py-1`}>
-              <Header />
-              <TextInput
-                placeholder="Thêm bình luận..."
-                placeholderTextColor="black"
-                style={tw`text-black flex-1 p-2`}
-              />
+            <View style={tw`border-t w-full border-gray-500 pt-4 mt-10`}>
+              <Text style={tw`text-black text-l mr-2 px-2 mt-3 mb-2`}>💬 Bình Luận</Text>
+              <View style={tw`flex-row items-center mb-4 bg-gray-100 rounded-full px-2 py-1`}>
+                <Header />
+                <TextInput
+                  placeholder="Thêm bình luận..."
+                  placeholderTextColor="black"
+                  style={tw`text-black flex-1 p-2`}
+                />
+              </View>
             </View>
           </View>
-        </View>
 
         <Text style={tw`text-xl font-bold px-3 mt-5 mb-2`}>Các món có nguyên liệu tương tự</Text>
         {similarRecipes.length === 0 ? (
@@ -194,18 +237,30 @@ const Details: React.FC = () => {
             data={similarRecipes}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => navigation.navigate('Details', { recipe: { ...item, id: Number(item.id) } })}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.push('Details', {
+                    recipe: { ...item, id: Number(item.id) },
+                  })
+                }
+              >
                 <View style={tw`flex-row flex-wrap`}>
-                  <Image source={{ uri: item.image }} style={tw`w-40 h-30 my-2 rounded-lg px-1`} />
+                  <Image
+                    source={{ uri: item.image }}
+                    style={tw`w-40 h-30 my-2 rounded-lg px-1`}
+                  />
                   <View style={tw`flex-1`}>
                     <Text style={tw`px-2 text-xl mt-4`}>• {item.name}</Text>
-                    <Text style={tw`px-2`}>Nguyên liệu: {item.ingredients.join(', ')}</Text>
+                    <Text style={tw`px-2`}>
+                      Nguyên liệu: {item.ingredients.join(', ')}
+                    </Text>
                   </View>
                 </View>
               </TouchableOpacity>
             )}
             nestedScrollEnabled={true}
           />
+
         )}
       </ScrollView>
     </>

@@ -14,7 +14,7 @@ const HomeScreen = () => {
   const insets = useSafeAreaInsets();
   return (
 
-        <View style={tw`flex-1 bg-white `}>
+      <View style={tw`flex-1 bg-white `}>
           <View>
             <View style={tw`flex-row items-center`}>
               <Header />
@@ -30,14 +30,12 @@ const HomeScreen = () => {
             <SearchController/>
           </View>
         <ScrollView  style={tw`flex-1 bg-orange-50  px-2 rounded-lg`}>
-       
               <IngredientList />
               <Text style={tw`mt-2 text-xl`}>Món ăn mới lên sóng</Text>
               <RecipeList/>
-           
         </ScrollView>
         {isSidebarOpen && <Sidebar isOpen={isSidebarOpen} closeMenu={() => setSidebarOpen(false)} />}
-        </View>
+    </View>
 
   );
 };
