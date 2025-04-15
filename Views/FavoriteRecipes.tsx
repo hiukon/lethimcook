@@ -1,6 +1,7 @@
-// views/favorite.tsx
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  View,Text,Image,FlatList,TouchableOpacity,Alert,Animated,
+} from 'react-native';
 import tw from 'twrnc';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import Header from './header';
@@ -10,11 +11,52 @@ import SearchController from './searchRecipe';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { loadFavorites, toggleFavoriteRecipe } from '@/controllers/favoriteController';
 
+type Props = {
+  onPress: () => void;
+  isFavorite: boolean;
+};
+
+const FallingStarButton: React.FC<Props> = ({ onPress, isFavorite }) => {
+  const fallAnim = useRef(new Animated.Value(0)).current;
+  const [animating, setAnimating] = useState(false);
+
+  const startFall = () => {
+    setAnimating(true);
+    Animated.sequence([
+      Animated.timing(fallAnim, {
+        toValue: 150,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fallAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setAnimating(false));
+  };
+
+  const handlePress = () => {
+    onPress();
+    startFall();
+  };
+
+  return (
+    <Animated.View style={{ transform: [{ translateY: fallAnim }] }}>
+      <TouchableOpacity onPress={handlePress}>
+        <Text style={tw`${isFavorite ? 'text-yellow-500' : 'text-gray-400'} text-3xl`}>
+          ★
+        </Text>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
+
 const FavoriteRecipes: React.FC = () => {
   const [favoriteRecipes, setFavoriteRecipes] = useState<any[]>([]);
   const isFocused = useIsFocused();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  
+
   useEffect(() => {
     if (isFocused) {
       fetchFavorites();
@@ -34,15 +76,20 @@ const FavoriteRecipes: React.FC = () => {
     try {
       const updated = await toggleFavoriteRecipe(recipe);
       setFavoriteRecipes(updated);
-
-      const message = updated.some((item: { id: any; }) => item.id === recipe.id)
+  
+      const message = updated.some((item: { id: any }) => item.id === recipe.id)
         ? 'Đã thêm vào danh sách yêu thích!'
         : 'Đã xóa khỏi danh sách yêu thích!';
-      Alert.alert('Thông báo', message);
+  
+      // Delay hiển thị thông báo 2 giây
+      setTimeout(() => {
+        Alert.alert('Thông báo', message);
+      }, 1000);
     } catch (error) {
       console.error(error);
     }
   };
+  
 
   return (
     <View style={tw`bg-white flex-1 p-2`}>
@@ -75,15 +122,17 @@ const FavoriteRecipes: React.FC = () => {
             return (
               <TouchableOpacity
                 onPress={() => navigation.navigate('Details', { recipe: item })}
-                style={tw`bg-orange-100 p-3 mb-3 border rounded-lg flex-row items-center`}>
+                style={tw`bg-orange-100 p-3 mb-3 border rounded-lg flex-row items-center`}
+              >
                 <Image source={{ uri: item.image }} style={tw`w-16 h-16 rounded-lg mr-3`} />
                 <View style={tw`flex-1`}>
                   <Text style={tw`text-black text-lg`}>{item.name}</Text>
                   <Text style={tw`text-gray-400`}>Tác giả: {item.author}</Text>
                 </View>
-                <TouchableOpacity onPress={() => handleToggleFavorite(item)}>
-                  <Text style={tw`${isFavorite ? 'text-yellow-500' : 'text-gray-400'} text-3xl`}>★</Text>
-                </TouchableOpacity>
+                <FallingStarButton
+                  onPress={() => handleToggleFavorite(item)}
+                  isFavorite={isFavorite}
+                />
               </TouchableOpacity>
             );
           }}

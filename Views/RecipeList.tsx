@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity } from 'react-native';
 import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import tw from 'twrnc';
 import { RootStackParamList } from '@/types';
 import { fetchRandomRecipes, Recipe } from '@/controllers/services/recipeList';
 import { getUserData } from '@/models/authHelper';
+import CustomLoading from './CustomLoading';
 
 type SearchViewRouteProp = RouteProp<RootStackParamList, 'RecipeList'>;
 
@@ -43,7 +44,8 @@ const RecipeList: React.FC = () => {
   }, []);
 
   if (!isAuthenticated) return null;
-  if (loading) return <ActivityIndicator size="large" color="blue" />;
+  
+  if (loading) return <CustomLoading />;
 
   return (
     <FlatList
@@ -51,10 +53,15 @@ const RecipeList: React.FC = () => {
       keyExtractor={(item) => item.id.toString()}
       horizontal
       nestedScrollEnabled={true}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={tw`px-2`} 
       renderItem={({ item }) => (
         <View style={tw`m-2 items-center`}>
           <TouchableOpacity onPress={() => handlePressRecipe(item)}>
-            <Image source={{ uri: item.image }} style={tw`w-24 h-24 rounded-lg`} />
+            <Image
+              source={{ uri: item.image }}
+              style={tw`w-24 h-24 rounded-lg`} 
+            />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handlePressRecipe(item)}>
             <Text style={tw`text-l mt-1`}>{item.name}</Text>

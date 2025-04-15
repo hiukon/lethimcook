@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import { fetchAllRecipes, searchRecipesByQuery } from '@/controllers/services/searchRecipe';
+import CustomLoading from './CustomLoading';
 
 const SearchRecipe = () => {
   const [recipes, setRecipes] = useState([]);
@@ -41,7 +42,7 @@ const SearchRecipe = () => {
     }
   };
 
-  if (loading) return <ActivityIndicator size="large" color="blue" />;
+  if (loading) return <CustomLoading />;
 
   return (
     <View style={tw`flex p-1`}>
