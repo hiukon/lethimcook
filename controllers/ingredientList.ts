@@ -11,7 +11,7 @@ export const handleIngredientSearch = async (
   try {
     setLoading(true);
     const results = await searchRecipesByIngredient(ingredientName);
-
+    console.log("2222");
     if (results.length === 0) {
       alert('Không tìm thấy kết quả nào!');
       return;
