@@ -25,11 +25,11 @@ const IngredientList: React.FC = () => {
         nestedScrollEnabled={true}
         numColumns={2}
         renderItem={({ item }) => (
-          <View style={tw`w-[${width / 2 - 22}px] items-center m-2.1`}>
+          <View style={tw`w-[${width / 2 - 10}px] items-center m-1.2`}>
             <TouchableOpacity
               style={tw`relative rounded-lg overflow-hidden`}
               onPress={() => handleIngredientSearch(item.name, navigation, setLoading)} >
-              <Image source={item.image} style={tw`w-49 h-33 rounded-lg`} />
+              <Image source={item.image} style={tw`w-50 h-33 rounded-lg`} />
               <Text style={tw`absolute bottom-0 text-white text-base font-bold p-1 w-full p-2 text-left`}>
                 {item.name}
               </Text>

@@ -11,6 +11,7 @@ import tw from 'twrnc';
 
 import Header from './header';
 import { useDetailsController } from '@/controllers/detailsController';
+import CustomLoading from './CustomLoading';
 
 const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'Details'>;
@@ -76,11 +77,12 @@ const Details: React.FC = () => {
   };
 
   const handlePress = () => {
-    startShake(); // chạy hiệu ứng
-    handleFavorite(); // gọi hàm khi nhấn
+    startShake(); 
+    handleFavorite(); 
   };
 
-  if (loading) return <ActivityIndicator size="large" color="blue" />;
+  // if (loading) return <ActivityIndicator size="large" color="blue" />;
+  if (loading) return <CustomLoading />;
 
   return (
     <>

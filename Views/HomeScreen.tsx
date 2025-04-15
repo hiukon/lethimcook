@@ -29,9 +29,9 @@ const HomeScreen = () => {
           <View style={tw`px-4`} >
             <SearchController/>
           </View>
-        <ScrollView  style={tw`flex-1 bg-orange-50  px-2 rounded-lg`}>
+        <ScrollView  style={tw`flex-1 bg-orange-50   rounded-lg`}>
               <IngredientList />
-              <Text style={tw`mt-2 text-xl`}>Món ăn mới lên sóng</Text>
+              <Text style={tw`mt-2 text-xl`}> Món ăn mới lên sóng</Text>
               <RecipeList/>
         </ScrollView>
         {isSidebarOpen && <Sidebar isOpen={isSidebarOpen} closeMenu={() => setSidebarOpen(false)} />}
