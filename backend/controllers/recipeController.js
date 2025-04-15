@@ -102,11 +102,9 @@ exports.updateRecipe = async (req, res) => {
 // 📌 Tìm kiếm công thức theo tên món ăn
 exports.searchRecipes = async (req, res) => {
     try {
-        const keyword = req.query.query.trim();
-        console.log("123",keyword);
+        const keyword = req.query.q ? req.query.q.trim() : '';
         // 1. Tìm trong MongoDB trước
         let recipes = await Recipe.find({ name: { $regex: keyword, $options: 'i' } });
-        console.log("333",recipes);
         if (recipes.length > 0) {
             return res.json(recipes);
         }
