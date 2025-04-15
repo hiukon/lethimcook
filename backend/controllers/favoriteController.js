@@ -7,7 +7,6 @@ const getFavorites = async (req, res) => {
     try {
         const userId = req.userId; // Lấy userId từ middleware
         if (!userId) return res.status(400).json({ message: "Thiếu userId" });
-        console.log(userId);
         const favorites = await Favorite.findOne({ userId });
         if (!favorites || !favorites.recipeIds.length) return res.json({ recipes: [] });
 

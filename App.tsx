@@ -16,11 +16,20 @@ import FavoriteRecipes from './Views/FavoriteRecipes';
 import NetInfo from "@react-native-community/netinfo";
 import { getUserData } from "./models/authHelper";
 import { syncFavoritesWithServer } from './models/syncFavoritesWithServer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
+  // useEffect(() => {
+  //   const checkToken = async () => {
+  //     const {token, refreshToken} = await getUserData();
+  //     console.log("Token sau khi mở lại app:", token,"123",refreshToken);
+  //   };
   
+  //   checkToken();
+  // }, []);
   return (
     
       <Stack.Navigator screenOptions={{ headerShown: false }}>
