@@ -60,8 +60,7 @@ const RecipeList: React.FC = () => {
           <TouchableOpacity onPress={() => handlePressRecipe(item)}>
             <Image
               source={{ uri: item.image }}
-              style={tw`w-24 h-24 rounded-lg`} 
-            />
+              style={tw`w-24 h-24 rounded-lg`} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handlePressRecipe(item)}>
             <Text style={tw`text-l mt-1`}>{item.name}</Text>

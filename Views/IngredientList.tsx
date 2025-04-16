@@ -23,6 +23,7 @@ const IngredientList: React.FC = () => {
         data={ingredients}
         keyExtractor={(item) => item.id.toString()}
         nestedScrollEnabled={true}
+        scrollEnabled={false}
         numColumns={2}
         renderItem={({ item }) => (
           <View style={tw`w-[${width / 2 - 10}px] items-center m-1.2`}>
