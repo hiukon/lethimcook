@@ -149,8 +149,12 @@ exports.searchRecipes = async (req, res) => {
 exports.filterRecipesByIngredient = async (req, res) => {
     try {
         const ingredient = req.query.q.trim();
+        console.log("123",ingredient);
         // Tìm công thức trong MongoDB theo nguyên liệu
-        let recipes = await Recipe.find({ ingredients: { $in: [ingredient] } });
+        // let recipes = await Recipe.find({ ingredients: { $in: [ingredient] } });
+        let recipes = await Recipe.find({
+            ingredients: { $elemMatch: { $regex: ingredient, $options: 'i' } }
+          });
 
         // Nếu tìm thấy công thức trong MongoDB
         if (recipes.length > 0) {

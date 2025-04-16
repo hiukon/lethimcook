@@ -29,7 +29,7 @@ const IngredientList: React.FC = () => {
             <TouchableOpacity
               style={tw`relative rounded-lg overflow-hidden`}
               onPress={() => handleIngredientSearch(item.name, navigation, setLoading)} >
-              <Image source={item.image} style={tw`w-50 h-33 rounded-lg`} />
+              <Image source={item.image} style={tw`w-46 h-33 rounded-lg`} />
               <Text style={tw`absolute bottom-0 text-white text-base font-bold p-1 w-full p-2 text-left`}>
                 {item.name}
               </Text>
