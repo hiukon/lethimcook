@@ -26,11 +26,13 @@ const CustomLoading = () => {
 
   return (
     <View style={styles.overlay}>
+      <Animated.View style={tw`w-20 h-20 bg-white rounded-full justify-center items-center`} >
       <Animated.Image
         source={require('../Img/pen.png')}
-        style={[tw`w-28 h-28`, { opacity: fadeAnim }]}
+        style={[tw`w-15 h-15`, { opacity: fadeAnim }]}
         resizeMode="contain"
       />
+      </Animated.View>
     </View>
   );
 };
@@ -38,7 +40,7 @@ const CustomLoading = () => {
 const styles = StyleSheet.create({
   overlay: {
     position: 'absolute',
-    top: 0,
+    top: -100,
     left: 0,
     width,
     height,
