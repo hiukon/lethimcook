@@ -50,7 +50,7 @@ const SearchRecipe = () => {
         <TextInput
           placeholder="Nhập món ăn cần tìm..."
           placeholderTextColor="gray"
-          style={tw`flex-1 h-8 text-xs leading-none px-2`}
+          style={tw`flex-1 h-9 text-xs leading-none px-2`}
           value={searchQuery}
           onChangeText={setSearchQuery}
           underlineColorAndroid="transparent"

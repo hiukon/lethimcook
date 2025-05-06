@@ -6,5 +6,15 @@ export const ingredients = [
   { id: '5', name: 'Tôm', image: require('../Img/tom.jpg') },
   { id: '6', name: 'Vịt', image: require('../Img/vit.jpg') },
   { id: '7', name: 'Cá', image: require('../Img/ca.jpg') },
-  { id: '8', name: 'Thịt lợn', image: require('../Img/lon.jpg') }
+  { id: '8', name: 'Thịt lợn', image: require('../Img/lon.jpg') },
+  { id: '9', name: 'Ngao', image: require('../Img/ngao.jpg') },
+  { id: '10', name: 'Trà sữa', image: require('../Img/sua.jpg') },
+  { id: '11', name: 'Cua đồng', image: require('../Img/cua.jpg') },
+  { id: '12', name: 'Thịt Ếch', image: require('../Img/ech.jpg') },
+  { id: '13', name: 'Trứng', image: require('../Img/trung.jpg') },
+  { id: '14', name: 'Xúc Xích', image: require('../Img/xucxich.jpg') },
+  { id: '15', name: 'Giá đỗ', image: require('../Img/giado.jpg') },
+  { id: '16', name: 'Măng', image: require('../Img/mang.jpg') },
+  { id: '17', name: 'Sứa', image: require('../Img/thitsua.jpg') },
+  { id: '18', name: 'Đậu phụ', image: require('../Img/dau.jpg') },
 ];
