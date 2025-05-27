@@ -31,8 +31,10 @@ const SearchRecipe = () => {
 
   const handleSearch = async () => {
     try {
+      setLoading(true);
       const data = await searchRecipesByQuery(searchQuery);
       setSearchResults(data);
+      setLoading(false);
       navigation.navigate('BottomTabNavigator', {
         screen: 'Tìm kiếm',
         params: { screen: 'Search', params: { searchResults: data } },

@@ -7,6 +7,8 @@ export const fetchAllRecipes = async () => {
 };
 
 export const searchRecipesByQuery = async (query: string) => {
+  console.log("anxinhgai");
   const response = await axios.get(`${API_BASE_URL}/search?q=${query}`);
+  console.log("response",response.data);
   return response.data;
 };

@@ -102,13 +102,14 @@ exports.updateRecipe = async (req, res) => {
 // 📌 Tìm kiếm công thức theo tên món ăn
 exports.searchRecipes = async (req, res) => {
     try {
+        console.log('1');
         const keyword = req.query.q ? req.query.q.trim() : '';
         // 1. Tìm trong MongoDB trước
         let recipes = await Recipe.find({ name: { $regex: keyword, $options: 'i' } });
         if (recipes.length > 0) {
             return res.json(recipes);
         }
-
+        console.log('2');
         // 2. Gọi GPT để tạo công thức
         const gptResponse = await openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
@@ -117,7 +118,7 @@ exports.searchRecipes = async (req, res) => {
                 content: `Hãy cung cấp công thức nấu ăn cho món ${keyword}. Bao gồm nguyên liệu và cách làm.`
             }]
         });
-
+        console.log('3');
         const gptContent = gptResponse.choices[0].message.content;
         const { ingredients, steps } = parseGPTContent(gptContent);
 
@@ -134,11 +135,12 @@ exports.searchRecipes = async (req, res) => {
             author: "Gpt",
             image: imageUrl
         });
-
+        console.log('4');
+        console.log(newRecipe);
         await newRecipe.save();
 
         // 5. Trả về công thức vừa tạo
-        res.status(201).json(newRecipe);
+        res.status(201).json([newRecipe]);
 
     } catch (error) {
         console.error("Lỗi searchRecipes:", error);
