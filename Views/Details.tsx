@@ -106,7 +106,7 @@ const Details: React.FC = () => {
           {currentStep !== null ? (
             <View style={tw`items-center`}>
               <Text style={tw`text-2xl font-bold`}>Bước {currentStep + 1}</Text>
-              <Text style={tw`text-lg text-gray-600 text-center mt-2`}>
+              <Text style={tw`text-lg text-gray-600  mt-2`}>
                 {getStepObj(recipe.steps[currentStep]).description}
               </Text>
               {getStepObj(recipe.steps[currentStep]).image ? (
@@ -148,7 +148,7 @@ const Details: React.FC = () => {
               {recipe.steps.map((item, index) => {
                 const step = getStepObj(item);
                 return (
-                  <View key={index} style={tw`flex-row items-center m-2`}>
+                  <View key={index} style={tw`flex-row  m-2`}>
                     <View style={tw`w-8 h-8 bg-orange-300 rounded-full justify-center items-center`}>
                       <Text style={tw`text-lg font-bold`}>{index + 1}</Text>
                     </View>
