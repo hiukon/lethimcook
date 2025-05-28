@@ -1,5 +1,5 @@
 export const ingredients = [
-  { id: '1', name: 'Món mặn', image: require('../Img/man.jpg') },
+  
   { id: '2', name: 'Gà', image: require('../Img/ga.jpg') },
   { id: '3', name: 'Creem', image: require('../Img/kem.jpg') },
   { id: '4', name: 'Bò', image: require('../Img/bo.jpg') },
