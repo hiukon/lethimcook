@@ -62,6 +62,10 @@ const Details: React.FC = () => {
 
   if (loading) return <CustomLoading />;
 
+  // Helper để lấy step object (tương thích cả dữ liệu cũ và mới)
+  const getStepObj = (step: any) =>
+    typeof step === 'string' ? { description: step, image: '' } : step;
+
   return (
     <>
       <AnimatedImageBackground
@@ -102,7 +106,16 @@ const Details: React.FC = () => {
           {currentStep !== null ? (
             <View style={tw`items-center`}>
               <Text style={tw`text-2xl font-bold`}>Bước {currentStep + 1}</Text>
-              <Text style={tw`text-lg text-gray-600 text-center mt-2`}>{recipe.steps[currentStep]}</Text>
+              <Text style={tw`text-lg text-gray-600 text-center mt-2`}>
+                {getStepObj(recipe.steps[currentStep]).description}
+              </Text>
+              {getStepObj(recipe.steps[currentStep]).image ? (
+                <Image
+                  source={{ uri: getStepObj(recipe.steps[currentStep]).image }}
+                  style={tw`w-60 h-40 rounded-lg mt-3`}
+                  resizeMode="cover"
+                />
+              ) : null}
 
               <View style={tw`flex-row mt-6`}>
                 <TouchableOpacity
@@ -132,14 +145,26 @@ const Details: React.FC = () => {
           ) : (
             <>
               <Text style={tw`text-xl font-bold px-3 mt-3`}>🍳 Các bước nấu món</Text>
-              {recipe.steps.map((item, index) => (
-                <View key={index} style={tw`flex-row items-center m-2`}>
-                  <View style={tw`w-8 h-8 bg-orange-300 rounded-full justify-center items-center`}>
-                    <Text style={tw`text-lg font-bold`}>{index + 1}</Text>
+              {recipe.steps.map((item, index) => {
+                const step = getStepObj(item);
+                return (
+                  <View key={index} style={tw`flex-row items-center m-2`}>
+                    <View style={tw`w-8 h-8 bg-orange-300 rounded-full justify-center items-center`}>
+                      <Text style={tw`text-lg font-bold`}>{index + 1}</Text>
+                    </View>
+                    <View style={tw`flex-1 px-3`}>
+                      <Text style={tw`text-xl`}>{step.description}</Text>
+                      {step.image ? (
+                        <Image
+                          source={{ uri: step.image }}
+                          style={tw`w-60 h-40 rounded-lg mt-2`}
+                          resizeMode="cover"
+                        />
+                      ) : null}
+                    </View>
                   </View>
-                  <Text style={tw`px-3 text-xl`}>{item}</Text>
-                </View>
-              ))}
+                );
+              })}
               <TouchableOpacity
                 style={tw`bg-orange-500 p-3 rounded-lg mt-4`}
                 onPress={startCooking}

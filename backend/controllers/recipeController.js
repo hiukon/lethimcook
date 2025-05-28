@@ -7,9 +7,10 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
     baseURL: 'https://openrouter.ai/api/v1'
 });
+
+// 📸 Lấy ảnh từ Pixabay
 async function getRecipeImage(keyword) {
     try {
-        
         const response = await axios.get('https://pixabay.com/api/', {
             params: {
                 key: process.env.PIXABAY_API_KEY,
@@ -26,33 +27,42 @@ async function getRecipeImage(keyword) {
     }
 }
 
+// 📥 Lấy ảnh cho từng bước nấu ăn
+async function getStepImages(stepDescriptions) {
+    const stepObjects = [];
+    for (const description of stepDescriptions) {
+        const image = await getRecipeImage(description);
+        stepObjects.push({ description, image });
+    }
+    return stepObjects;
+}
 
-//  Hàm parse nội dung GPT trả về thành ingredients + steps
-function parseGPTContent(content) {
+// 🔍 Parse nội dung từ GPT: tách nguyên liệu + danh sách bước mô tả
+function parseRawGPTContent(content) {
     const ingredients = content.match(/(?<=Nguyên liệu:)([\s\S]*?)(?=Cách làm:)/i)?.[0]
         .split('\n')
         .map(i => i.trim())
         .filter(i => i.length > 0);
 
-    const steps = content.match(/(?<=Cách làm:)([\s\S]*)/i)?.[0]
+    const stepDescriptions = content.match(/(?<=Cách làm:)([\s\S]*)/i)?.[0]
         .split('\n')
         .map(s => s.trim())
         .filter(s => s.length > 0);
 
-    return { ingredients, steps };
+    return { ingredients, stepDescriptions };
 }
 
-// Lấy tất cả công thức
+// 📚 Lấy toàn bộ công thức
 exports.getRecipes = async (req, res) => {
     try {
         const recipes = await Recipe.find();
-        return res.json(recipes);
+        res.json(recipes);
     } catch (error) {
-        return res.status(500).json({ message: "Lỗi server" });
+        res.status(500).json({ message: "Lỗi server" });
     }
 };
 
-// Thêm công thức mới
+// ➕ Thêm công thức mới
 exports.createRecipe = async (req, res) => {
     try {
         const newRecipe = new Recipe(req.body);
@@ -63,7 +73,7 @@ exports.createRecipe = async (req, res) => {
     }
 };
 
-// Xóa công thức
+// ❌ Xóa công thức
 exports.deleteRecipe = async (req, res) => {
     try {
         await Recipe.findByIdAndDelete(req.params.id);
@@ -73,7 +83,7 @@ exports.deleteRecipe = async (req, res) => {
     }
 };
 
-// 📌 Lấy chi tiết công thức theo ID
+// 🔍 Lấy công thức theo ID
 exports.getRecipeById = async (req, res) => {
     try {
         const recipe = await Recipe.findById(req.params.id);
@@ -86,7 +96,7 @@ exports.getRecipeById = async (req, res) => {
     }
 };
 
-// 📌 Cập nhật công thức theo ID
+// ✏️ Cập nhật công thức
 exports.updateRecipe = async (req, res) => {
     try {
         const updatedRecipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -99,18 +109,14 @@ exports.updateRecipe = async (req, res) => {
     }
 };
 
-// 📌 Tìm kiếm công thức theo tên món ăn
+// 🔍 Tìm kiếm theo tên món ăn
 exports.searchRecipes = async (req, res) => {
     try {
-        console.log('1');
         const keyword = req.query.q ? req.query.q.trim() : '';
-        // 1. Tìm trong MongoDB trước
         let recipes = await Recipe.find({ name: { $regex: keyword, $options: 'i' } });
-        if (recipes.length > 0) {
-            return res.json(recipes);
-        }
-        console.log('2');
-        // 2. Gọi GPT để tạo công thức
+
+        if (recipes.length > 0) return res.json(recipes);
+
         const gptResponse = await openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [{
@@ -118,28 +124,23 @@ exports.searchRecipes = async (req, res) => {
                 content: `Hãy cung cấp công thức nấu ăn cho món ${keyword}. Bao gồm nguyên liệu và cách làm.`
             }]
         });
-        console.log('3');
+
         const gptContent = gptResponse.choices[0].message.content;
-        const { ingredients, steps } = parseGPTContent(gptContent);
-
-        // 3. Gọi Pixabay để lấy ảnh món ăn
+        const { ingredients, stepDescriptions } = parseRawGPTContent(gptContent);
+        const steps = await getStepImages(stepDescriptions);
         const imageUrl = await getRecipeImage(keyword);
-
-        // 4. Tạo và lưu công thức mới
         const nextId = await getNextId('recipeId');
-        const newRecipe = new Recipe({
-            id: nextId,  
-            name: keyword,
-            ingredients:ingredients,
-            steps: steps,
-            author: "Gpt",
-            image: imageUrl
-        });
-        console.log('4');
-        console.log(newRecipe);
-        await newRecipe.save();
 
-        // 5. Trả về công thức vừa tạo
+        const newRecipe = new Recipe({
+            id: nextId,
+            name: keyword,
+            author: "Gpt",
+            image: imageUrl,
+            ingredients,
+            steps
+        });
+
+        await newRecipe.save();
         res.status(201).json([newRecipe]);
 
     } catch (error) {
@@ -147,48 +148,45 @@ exports.searchRecipes = async (req, res) => {
         res.status(500).json({ message: "Lỗi khi tìm kiếm công thức" });
     }
 };
-// 📌 Lọc công thức theo nguyên liệu
+
+// 🧂 Lọc công thức theo nguyên liệu
 exports.filterRecipesByIngredient = async (req, res) => {
     try {
         const ingredient = req.query.q.trim();
-        console.log("123",ingredient);
-        // Tìm công thức trong MongoDB theo nguyên liệu
-        // let recipes = await Recipe.find({ ingredients: { $in: [ingredient] } });
         let recipes = await Recipe.find({
             ingredients: { $elemMatch: { $regex: ingredient, $options: 'i' } }
-          });
+        });
 
-        // Nếu tìm thấy công thức trong MongoDB
-        if (recipes.length > 0) {
-            return res.json(recipes);
-        }
+        if (recipes.length > 0) return res.json(recipes);
 
-        // Nếu không tìm thấy, gọi GPT để tạo công thức mới với nguyên liệu này
         const gptResponse = await openai.chat.completions.create({
-            model: 'gpt-3.5-turbo', 
-            messages: [{ role: 'user', content: `Hãy cung cấp công thức nấu ăn với nguyên liệu ${ingredient}. Bao gồm nguyên liệu và cách làm.` }]
+            model: 'gpt-3.5-turbo',
+            messages: [{
+                role: 'user',
+                content: `Hãy cung cấp công thức nấu ăn với nguyên liệu ${ingredient}. Bao gồm nguyên liệu và cách làm.`
+            }]
         });
 
-        // Lấy nội dung từ GPT và parse thành ingredients và steps
         const gptContent = gptResponse.choices[0].message.content;
-        const { ingredients: newIngredients, steps: newSteps } = parseGPTContent(gptContent);
+        const { ingredients: newIngredients, stepDescriptions } = parseRawGPTContent(gptContent);
+        const steps = await getStepImages(stepDescriptions);
+        const imageUrl = await getRecipeImage(ingredient);
+        const nextId = await getNextId('recipeId');
 
-        // Tạo một công thức mới từ GPT
         const newRecipe = new Recipe({
+            id: nextId,
             name: `Công thức với ${ingredient}`,
+            author: "System",
+            image: imageUrl,
             ingredients: newIngredients,
-            steps: newSteps,
-            author: "System", // Bạn có thể thay đổi nếu cần
-            image: "", // Thêm ảnh nếu cần
+            steps
         });
 
-        // Lưu công thức mới vào MongoDB
         await newRecipe.save();
-
-        // Trả về công thức mới tạo
         res.status(201).json(newRecipe);
 
     } catch (error) {
+        console.error("Lỗi filterRecipesByIngredient:", error);
         res.status(500).json({ message: "Lỗi khi lọc công thức" });
     }
 };
