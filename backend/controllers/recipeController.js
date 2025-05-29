@@ -190,3 +190,30 @@ exports.filterRecipesByIngredient = async (req, res) => {
         res.status(500).json({ message: "Lỗi khi lọc công thức" });
     }
 };
+
+exports.toggleReaction = async (req, res) => {
+  try {
+    const { recipeId, userId, reactionType } = req.body;
+    const recipe = await Recipe.findById(recipeId);
+    if (!recipe) return res.status(404).json({ message: "Không tìm thấy món ăn" });
+
+    let reaction = recipe.reactions.find(r => r.type === reactionType);
+    if (!reaction) {
+      // Nếu chưa có loại reaction này, thêm mới
+      reaction = { type: reactionType, user_ids: [userId] };
+      recipe.reactions.push(reaction);
+    } else {
+      // Nếu đã có, kiểm tra user đã thả chưa
+      const idx = reaction.user_ids.indexOf(userId);
+      if (idx === -1) {
+        reaction.user_ids.push(userId);
+      } else {
+        reaction.user_ids.splice(idx, 1); // Bỏ reaction
+      }
+    }
+    await recipe.save();
+    res.json(recipe.reactions);
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi khi thả biểu cảm" });
+  }
+};

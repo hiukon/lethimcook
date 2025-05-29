@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View, Text, Image, ScrollView, TouchableOpacity, TextInput,
   Animated, ImageBackground
@@ -13,6 +13,8 @@ import Header from './header';
 import { useDetailsController } from '@/controllers/detailsController';
 import CustomLoading from './CustomLoading';
 import { useCommentsController } from '@/controllers/useCommentsController';
+import { useReactionController } from '@/controllers/useReactionController';
+import { getUserData } from '@/models/authHelper';
 
 const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'Details'>;
@@ -40,6 +42,14 @@ const Details: React.FC = () => {
     currentUserId,
     handleAddComment,
   } = useCommentsController(recipe._id);
+
+  // Biểu cảm
+  const { reactions, handleReaction, getReactionCount, isReacted } = useReactionController(recipe);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    getUserData().then(data => setUserId(data?.user?.userId));
+  }, []);
 
   const INITIAL_HEIGHT = 300;
   const HEADER_HEIGHT = 64;
@@ -186,11 +196,26 @@ const Details: React.FC = () => {
           )}
         </View>
 
+        {/* BIỂU CẢM */}
         <View style={tw`flex-row px-4 mt-2`}>
           <Text style={tw`text-black text-l`}>Bày tỏ cảm xúc của bạn</Text>
-          {['❤️', '😋', '👏'].map((icon, i) => (
-            <TouchableOpacity key={i} style={tw`flex-row items-center bg-gray-100 ml-2 border rounded-xl`}>
-              <Text style={tw`text-black text-l m-0.5`}> {icon} </Text>
+          {[
+            { icon: '❤️', type: 'love' },
+            { icon: '😋', type: 'yummy' },
+            { icon: '👏', type: 'clap' }
+          ].map(({ icon, type }) => (
+            <TouchableOpacity
+              key={type}
+              style={tw`flex-row items-center bg-gray-100 ml-2 border rounded-xl px-2 py-1`}
+              onPress={() => handleReaction(type)}
+              disabled={!userId}
+            >
+              <Text style={tw`text-black text-l m-0.5 ${isReacted(type, userId || '') ? 'font-bold text-orange-500' : ''}`}>
+                {icon}
+              </Text>
+              <Text style={tw`text-black ml-1`}>
+                {getReactionCount(type) > 0 ? getReactionCount(type) : ''}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
