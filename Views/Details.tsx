@@ -12,6 +12,7 @@ import tw from 'twrnc';
 import Header from './header';
 import { useDetailsController } from '@/controllers/detailsController';
 import CustomLoading from './CustomLoading';
+import { useCommentsController } from '@/controllers/useCommentsController';
 
 const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'Details'>;
@@ -29,6 +30,16 @@ const Details: React.FC = () => {
     startCooking, nextStep, prevStep,
     handleFavorite, setCurrentStep
   } = useDetailsController(recipe);
+
+  // Bình luận
+  const {
+    comments,
+    commentText,
+    setCommentText,
+    isLoggedIn,
+    currentUserId,
+    handleAddComment,
+  } = useCommentsController(recipe._id);
 
   const INITIAL_HEIGHT = 300;
   const HEADER_HEIGHT = 64;
@@ -209,6 +220,7 @@ const Details: React.FC = () => {
             <Text style={tw`text-black text-center`}>Kết bạn bếp</Text>
           </TouchableOpacity>
 
+          {/* BÌNH LUẬN */}
           <View style={tw`border-t w-full border-gray-500 pt-4 mt-10`}>
             <Text style={tw`text-black text-l px-2 mb-2`}>💬 Bình Luận</Text>
             <View style={tw`flex-row items-center mb-4 bg-gray-100 rounded-full px-2 py-1`}>
@@ -217,8 +229,25 @@ const Details: React.FC = () => {
                 placeholder="Thêm bình luận..."
                 placeholderTextColor="black"
                 style={tw`text-black flex-1 p-2`}
+                value={commentText}
+                onChangeText={setCommentText}
+                editable={isLoggedIn}
+                onSubmitEditing={handleAddComment}
               />
+              <TouchableOpacity onPress={handleAddComment} disabled={!isLoggedIn}>
+                <Text style={tw`text-orange-500 font-bold ml-2`}>Gửi</Text>
+              </TouchableOpacity>
             </View>
+            {!isLoggedIn && (
+              <Text style={tw`text-red-500 text-center mb-2`}>Bạn cần đăng nhập để bình luận.</Text>
+            )}
+            {comments.map((c, idx) => (
+              <View key={idx} style={tw`mb-2 px-2`}>
+                <Text style={tw`font-bold`}>{c.username}</Text>
+                <Text>{c.content}</Text>
+                <Text style={tw`text-xs text-gray-400`}>{new Date(c.createdAt).toLocaleString()}</Text>
+              </View>
+            ))}
           </View>
         </View>
 

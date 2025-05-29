@@ -35,7 +35,7 @@ const IngredientList: React.FC = () => {
 
   return (
     <View>
-      <Text style={tw`text-xl m-2`}>Nguyên Liệu ngon hôm nay</Text>
+      <Text style={tw`text-xl m-2`}>Nguyên liệu ngon hôm nay</Text>
       <FlatList
         style={tw`flex-1 rounded-lg`}
         data={randomIngredients}

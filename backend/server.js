@@ -5,6 +5,7 @@ const cors = require('cors');
 const recipeRoutes = require('./routes/recipeRoutes');
 const userRoutes = require('./routes/userRoutes');
 const favoriteRoutes = require("./routes/favoriteRoutes");
+const commentRoutes = require('./routes/commentRoutes');
 const path = require('path');
 
 
@@ -30,6 +31,9 @@ app.get('/', (req, res) => {
 app.use('/api', recipeRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api', favoriteRoutes);
+app.use('/api', commentRoutes);
+
+
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0'; // Chạy trên IPv4
 
