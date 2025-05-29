@@ -12,22 +12,45 @@ export const useDetailsController = (recipe: any) => {
   const nextStep = () => setCurrentStep((prev) => (prev !== null && prev < recipe.steps.length - 1 ? prev + 1 : prev));
   const prevStep = () => setCurrentStep((prev) => (prev !== null && prev > 0 ? prev - 1 : prev));
 
-  const fetchSimilarRecipes = async () => {
-    setLoading(true);
-    try {
-      const data = await getAllRecipes();
-      const filteredRecipes = data.filter(
-        (item: any) =>
-          item.id !== recipe.id &&
-          item.ingredients.some((ing: string) => recipe.ingredients.includes(ing))
+  const normalizeIngredient = (ingredient: string) => {
+  return ingredient
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, '') 
+    .replace(/[0-9]+/g, '') 
+    .replace(/(quả|củ|miếng|g|kg|ml|thìa|muỗng|bát|chén|nhánh|tép|con)/g, '') 
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+};
+
+const fetchSimilarRecipes = async () => {
+  setLoading(true);
+  try {
+    const data = await getAllRecipes();
+
+    // Chuẩn hóa nguyên liệu của công thức hiện tại
+    const normalizedRecipeIngredients = recipe.ingredients.map(normalizeIngredient);
+
+    const filteredRecipes = data.filter((item: any) => {
+      if (item.id === recipe.id) return false;
+
+      // Chuẩn hóa nguyên liệu của công thức so sánh
+      const normalizedItemIngredients = item.ingredients.map(normalizeIngredient);
+
+      // Tìm số lượng nguyên liệu giống nhau
+      const commonIngredients = normalizedItemIngredients.filter((ing: any) =>
+        normalizedRecipeIngredients.includes(ing)
       );
-      setSimilarRecipes(filteredRecipes);
-    } catch (error) {
-      console.error('Lỗi khi lấy công thức tương tự:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+      return commonIngredients.length >= 2; 
+    });
+
+    setSimilarRecipes(filteredRecipes);
+  } catch (error) {
+    console.error('Lỗi khi lấy công thức tương tự:', error);
+  } finally {
+    setLoading(false);
+  }
+}
 
   const handleFavorite = async () => {
     try {
@@ -56,6 +79,7 @@ export const useDetailsController = (recipe: any) => {
     nextStep,
     prevStep,
     handleFavorite,
-    setCurrentStep
+    setCurrentStep,
+    normalizeIngredient
   };
 };

@@ -30,6 +30,10 @@ const SearchRecipe = () => {
   }, []);
 
   const handleSearch = async () => {
+     if (!searchQuery.trim()) {
+      alert('Vui lòng nhập từ khóa tìm kiếm!');
+    return;
+  }
     try {
       setLoading(true);
       const data = await searchRecipesByQuery(searchQuery);
