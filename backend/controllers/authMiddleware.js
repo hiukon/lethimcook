@@ -6,7 +6,6 @@ const REFRESH_SECRET = 'REFRESH_SECRET';
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
   const refreshToken = req.headers['x-refresh-token'];
-  console.log('11',authHeader,'22',!refreshToken);
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'No access token provided' });
   }
@@ -38,7 +37,6 @@ const authMiddleware = (req, res, next) => {
 
         res.setHeader('x-access-token', newAccessToken);
         res.setHeader('x-refresh-token', newRefreshToken);
-        console.log("11",newAccessToken,"22",newRefreshToken);
         req.userId = refreshDecoded.userId;
         next();
       } catch (refreshErr) {

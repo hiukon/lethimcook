@@ -17,7 +17,10 @@ const RecipeSchema = new mongoose.Schema({
   image: { type: String, required: true },
   ingredients: { type: [String], required: true },
   steps: { type: [StepSchema], required: true }, // <-- thêm dấu phẩy ở đây
-  reactions: { type: [ReactionSchema], default: [] }
+  reactions: { type: [ReactionSchema], default: [] },
+  searchCount: { type: Number, default: 0 },      // Số lần được tìm kiếm
+  totalReadTime: { type: Number, default: 0 },    // Tổng thời gian đọc (giây)
+  readCount: { type: Number, default: 0 },        // Số lượt đọc
 });
 
 module.exports = mongoose.model('Recipe', RecipeSchema);

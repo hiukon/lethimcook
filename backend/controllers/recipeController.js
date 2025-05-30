@@ -115,7 +115,13 @@ exports.searchRecipes = async (req, res) => {
         const keyword = req.query.q ? req.query.q.trim() : '';
         let recipes = await Recipe.find({ name: { $regex: keyword, $options: 'i' } });
 
-        if (recipes.length > 0) return res.json(recipes);
+        if (recipes.length > 0){
+             await Recipe.updateMany(
+                { _id: { $in: recipes.map(r => r._id) } },
+                { $inc: { searchCount: 1 } }
+            );
+            return res.json(recipes);
+        } 
 
         const gptResponse = await openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
@@ -131,13 +137,17 @@ exports.searchRecipes = async (req, res) => {
         const imageUrl = await getRecipeImage(keyword);
         const nextId = await getNextId('recipeId');
 
-        const newRecipe = new Recipe({
-            id: nextId,
-            name: keyword,
-            author: "Gpt",
-            image: imageUrl,
-            ingredients,
-            steps
+       const newRecipe = new Recipe({
+           id: nextId,
+           name: keyword,
+           author: "Gpt",
+           image: imageUrl,
+           ingredients,
+           steps,
+           reactions: [],            // Mặc định là mảng rỗng
+           searchCount: 1,           // Nếu là kết quả tìm kiếm đầu tiên, có thể để 1
+           totalReadTime: 0,         // Mặc định 0
+           readCount: 0              // Mặc định 0
         });
 
         await newRecipe.save();
@@ -215,5 +225,26 @@ exports.toggleReaction = async (req, res) => {
     res.json(recipe.reactions);
   } catch (error) {
     res.status(500).json({ message: "Lỗi khi thả biểu cảm" });
+  }
+};
+
+exports.trackReadTime = async (req, res) => {
+  try {
+    const { recipeId, readTime } = req.body;
+    await Recipe.findByIdAndUpdate(recipeId, {
+      $inc: { totalReadTime: readTime, readCount: 1 }
+    });
+    res.json({ message: 'Đã ghi nhận thời gian đọc' });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi ghi nhận thời gian đọc' });
+  }
+};
+
+exports.getTopRecipes = async (req, res) => {
+  try {
+    const recipes = await Recipe.find().sort({ searchCount: -1, totalReadTime: -1 }).limit(10);
+    res.json(recipes);
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi lấy top công thức' });
   }
 };

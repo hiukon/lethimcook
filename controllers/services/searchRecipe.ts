@@ -7,8 +7,13 @@ export const fetchAllRecipes = async () => {
 };
 
 export const searchRecipesByQuery = async (query: string) => {
-  console.log("anxinhgai");
   const response = await axios.get(`${API_BASE_URL}/search?q=${query}`);
-  console.log("response",response.data);
   return response.data;
+};
+
+export const trackRecipeReadTime = async (recipeId: string, readTime: number) => {
+  await axios.post(`${API_BASE_URL}/recipes/track-read`, {
+    recipeId,
+    readTime,
+  });
 };

@@ -8,13 +8,13 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import tw from 'twrnc';
-
 import Header from './header';
 import { useDetailsController } from '@/controllers/detailsController';
 import CustomLoading from './CustomLoading';
 import { useCommentsController } from '@/controllers/useCommentsController';
 import { useReactionController } from '@/controllers/useReactionController';
 import { getUserData } from '@/models/authHelper';
+import { trackRecipeReadTime } from '@/controllers/services/searchRecipe';
 
 const AnimatedImageBackground = Animated.createAnimatedComponent(ImageBackground);
 type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'Details'>;
@@ -23,6 +23,17 @@ const Details: React.FC = () => {
   const route = useRoute<DetailsScreenRouteProp>();
   const { recipe } = route.params;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  // Thời gian bắt đầu đọc
+  const readStartTime = useRef(Date.now());
+
+  useEffect(() => {
+    // Khi rời khỏi màn hình, gửi thời gian đọc
+    return () => {
+      const readTime = Math.floor((Date.now() - readStartTime.current) / 1000);
+      trackRecipeReadTime(recipe._id, readTime);
+    };
+  }, []);
 
   const animatedValue = useRef(new Animated.Value(0)).current;
   const shakeAnim = useRef(new Animated.Value(0)).current;

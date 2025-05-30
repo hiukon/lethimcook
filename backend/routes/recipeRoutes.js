@@ -11,5 +11,6 @@ router.delete('/recipes/:id', recipeController.deleteRecipe); // Xóa công th�
 router.get('/search', recipeController.searchRecipes);        // Tìm kiếm công thức
 router.get('/filter', recipeController.filterRecipesByIngredient); // Lọc theo nguyên liệu
 router.post('/recipes/reaction', authMiddleware, recipeController.toggleReaction); // Thả icon cho  món ăn 
-
+router.post('/recipes/track-read', recipeController.trackReadTime);
+router.get('/recipes/top', recipeController.getTopRecipes);
 module.exports = router;
